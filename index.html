@@ -37,6 +37,7 @@
   color-scheme:dark;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html{background:var(--ink);scroll-behavior:smooth}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{background:var(--ink);color:var(--bone);font-family:var(--f-body);font-size:var(--step-0);line-height:1.7;overflow-x:hidden;word-break:keep-all;overflow-wrap:break-word;-webkit-font-smoothing:antialiased}
@@ -104,6 +105,7 @@ p{margin:0;max-width:62ch;color:#c6cbd8}
 .scrollcue span{width:1px;height:42px;background:linear-gradient(var(--ice),transparent);animation:drip 2.2s ease-in-out infinite;transform-origin:top}
 @keyframes drip{0%{transform:scaleY(0)}50%{transform:scaleY(1)}100%{transform:scaleY(1);opacity:0}}
 @media (max-width:760px){.hero-grid{grid-template-columns:1fr}.hints{justify-self:start;align-items:flex-start}}
+@media (prefers-reduced-motion:reduce){.hint i::after,.scrollcue span{animation:none}}
 
 /* about */
 .about{min-height:110svh;display:grid;align-items:center;padding-block:120px}
@@ -116,12 +118,13 @@ p{margin:0;max-width:62ch;color:#c6cbd8}
 .works{padding-block:140px 160px}
 .works-head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;margin-bottom:48px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
-@media (max-width:820px){.grid{grid-template-columns:1fr}.card.feature canvas{aspect-ratio:16/10}}
+@media (max-width:820px){.grid{grid-template-columns:1fr}.grid .card.feature canvas{aspect-ratio:16/10}}
 .card{position:relative;border-radius:18px;background:rgba(16,19,27,.62);border:1px solid var(--line);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
   transform-style:preserve-3d;transform:perspective(900px) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg));transition:transform .5s cubic-bezier(.2,.8,.2,1),border-color .3s;overflow:hidden;min-width:0}
 .card:hover{border-color:rgba(188,211,255,.35);transition:transform .12s linear,border-color .3s}
 .card::after{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(400px circle at var(--gx,50%) var(--gy,50%),rgba(188,211,255,.13),transparent 45%);opacity:0;transition:opacity .3s}
 .card:hover::after{opacity:1}
+@media (pointer:coarse){.card{-webkit-backdrop-filter:none;backdrop-filter:none;background:rgba(16,19,27,.9)}}
 .card.feature{grid-column:1/-1}
 .card.feature canvas{aspect-ratio:21/8}
 .award{color:var(--ember)}
@@ -191,8 +194,81 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;fl
 @media (pointer:coarse){.cur{display:none}}
 .flash{position:fixed;z-index:29;pointer-events:none;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;border:2px solid var(--ember);animation:flash 1.1s cubic-bezier(.1,.7,.2,1) forwards}
 @keyframes flash{to{transform:scale(70);opacity:0;border-width:.3px}}
+@media (prefers-reduced-motion:reduce){.flash{display:none}}
+/* star birth */
+#whiteout{position:fixed;inset:0;z-index:28;pointer-events:none;background:radial-gradient(circle at var(--wx,50%) var(--wy,40%),#fff 0,#fff7e8 22%,rgba(255,214,170,.85) 48%,rgba(255,154,92,.35) 80%);opacity:0}
+#whiteout.go{animation:whiteout 1.5s cubic-bezier(.15,.7,.25,1) forwards}
+@keyframes whiteout{0%{opacity:0}6%{opacity:.96}100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){#whiteout.go{animation-duration:.6s}@keyframes whiteout{0%{opacity:0}20%{opacity:.5}100%{opacity:0}}}
+.shake main,.shake .nav{animation:shake .9s cubic-bezier(.3,.7,.3,1)}
+@keyframes shake{0%,100%{transform:none}10%{transform:translate(-7px,4px)}20%{transform:translate(6px,-5px)}32%{transform:translate(-5px,-3px)}46%{transform:translate(4px,3px)}62%{transform:translate(-2px,2px)}80%{transform:translate(1px,-1px)}}
+@media (prefers-reduced-motion:reduce){.shake main,.shake .nav{animation:none}}
+#star{position:fixed;left:0;top:0;z-index:3;pointer-events:none;transform:translate3d(var(--sx,-999px),var(--sy,-999px),0);opacity:0;transition:opacity .8s}
+#star.on{opacity:1}
+#star .lead{position:absolute;left:0;top:0;width:var(--lw,120px);height:1px;background:linear-gradient(90deg,rgba(255,214,170,.0),rgba(255,214,170,.7));transform-origin:left;transform:rotate(-18deg)}
+#star .stc{position:absolute;left:calc(var(--lw,120px)*.95);top:calc(var(--lw,120px)*-.33 - 64px);display:grid;gap:3px;color:#ffe2c4;white-space:nowrap;font-variant-numeric:tabular-nums;text-shadow:0 0 18px rgba(0,0,0,.8)}
+#star .stc b{font-family:var(--f-display);font-weight:700;font-size:1.15rem;letter-spacing:-.01em;color:#fff3e6;text-transform:none}
+#star .stc span{opacity:.82}
+#star.left .lead{left:auto;right:0;transform-origin:right;transform:rotate(18deg);background:linear-gradient(270deg,rgba(255,214,170,0),rgba(255,214,170,.7))}
+#star.left .stc{left:auto;right:calc(var(--lw,120px)*.95);text-align:right}
+#star.dock{display:none}
+#cine{position:fixed;left:50%;top:var(--cy,64%);transform:translate(-50%,0);z-index:4;pointer-events:none;text-align:center;color:#fff1e2;opacity:0;transition:opacity .6s;text-shadow:0 0 24px rgba(0,0,0,.9);white-space:nowrap}
+#cine.on{opacity:1}
+.hero .wrap{transition:opacity .5s}
+@media (max-width:760px){body.cine-on .hero .wrap{opacity:.12}}
+#cine small{display:block;color:rgba(255,226,196,.7);margin-bottom:6px}
+#cine strong{font-family:var(--f-display);font-weight:600;font-size:clamp(1.1rem,.9rem + 1vw,1.7rem);letter-spacing:-.01em}
+body.sun-on .hero .hero-line,body.sun-on .hero .tag,body.sun-on .hero .hint,body.sun-on .hero .scrollcue{text-shadow:0 1px 18px rgba(8,9,13,.95),0 0 2px rgba(8,9,13,.9)}
+.revive{font:inherit;font-family:var(--f-mono);font-size:var(--step--1);letter-spacing:.06em;color:var(--ember);background:rgba(8,9,13,.55);border:1px solid rgba(255,154,92,.45);border-radius:999px;padding:7px 14px;cursor:pointer;transition:background .25s,color .25s}
+.revive:hover{background:var(--ember);color:var(--ink)}
 .toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);z-index:45;background:var(--bone);color:var(--ink);padding:10px 18px;border-radius:999px;opacity:0;transition:.35s;pointer-events:none}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+/*FLOW-CSS*/
+/* ---------- logistics cinema ---------- */
+.flow{height:820vh;padding:0;position:relative}
+@media (max-width:760px){.flow{height:720vh}}
+.flow-stage{position:sticky;top:0;height:100vh;overflow:hidden;pointer-events:none;--vis:0}
+.flow-bar{position:absolute;left:0;right:0;height:0;background:#000;z-index:2}
+.flow-bar.top{top:0}.flow-bar.bot{bottom:0}
+.flow-top{position:absolute;z-index:3;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 74px);display:flex;justify-content:space-between;gap:16px;padding-left:var(--gutter);padding-right:var(--gutter-r);color:var(--mute);opacity:var(--vis);font-variant-numeric:tabular-nums}
+.flow-top #fscn{color:var(--ice)}
+.flow-top .fex{color:var(--ember)}
+.flow-cap{position:absolute;z-index:3;left:var(--gutter);bottom:calc(14vh + env(safe-area-inset-bottom,0px));max-width:min(560px,calc(100% - 32px));display:grid;gap:10px;opacity:var(--vis)}
+.flow-cap #fcK{color:var(--ember)}
+.flow-cap h2{margin:0;font-size:clamp(1.7rem,1.1rem + 2.4vw,3.2rem);line-height:1.12;text-shadow:0 2px 30px rgba(0,0,0,.85)}
+.flow-cap p{color:#c9cedb;text-shadow:0 1px 18px rgba(0,0,0,.9);font-size:.98rem}
+.swap .flow-cap>*{animation:capIn .9s cubic-bezier(.2,.8,.2,1) both}
+.swap .flow-cap h2{animation-delay:.06s}.swap .flow-cap p{animation-delay:.14s}
+@keyframes capIn{from{opacity:0;transform:translateY(14px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+@media (prefers-reduced-motion:reduce){.swap .flow-cap>*{animation:none}}
+#fhud{position:absolute;z-index:3;right:calc(var(--gutter-r) + 36px);bottom:calc(14vh + env(safe-area-inset-bottom,0px));display:grid;gap:6px;justify-items:end;text-align:right;color:var(--bone);opacity:var(--vis);font-variant-numeric:tabular-nums}
+#fhud span{background:rgba(8,9,13,.55);border:1px solid var(--line);border-radius:6px;padding:4px 9px}
+#fhud span:last-child{color:var(--ember);border-color:rgba(255,154,92,.35)}
+#frail{position:absolute;z-index:3;right:var(--gutter-r);top:50%;transform:translateY(-50%);height:min(46vh,340px);width:14px;display:flex;flex-direction:column;justify-content:space-between;align-items:center;opacity:var(--vis);pointer-events:auto}
+#frail:focus-within{opacity:1}
+#frail::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--line)}
+#frail i{position:absolute;left:50%;top:0;width:1px;height:100%;background:var(--ember);transform-origin:top;transform:scaleY(0)}
+#frail button{position:relative;width:14px;height:14px;padding:0;border-radius:50%;border:1px solid var(--line);background:var(--ink);cursor:pointer}
+#frail button.on{border-color:var(--ember);background:var(--ember)}
+#frail button span{position:absolute;right:22px;top:50%;transform:translateY(-50%);white-space:nowrap;font-family:var(--f-mono);font-size:.68rem;letter-spacing:.06em;color:var(--mute);opacity:0;transition:opacity .2s}
+#frail button:hover span,#frail button:focus-visible span,#frail button.on span{opacity:1}
+#flabs{position:absolute;inset:0;z-index:1}
+.flab{position:absolute;left:0;top:0;opacity:0;font-size:.66rem;letter-spacing:.06em;color:var(--ice);white-space:nowrap;padding:3px 7px 3px 12px;background:rgba(8,9,13,.6);border:1px solid var(--line);border-radius:4px;will-change:transform;margin:-12px 0 0 6px}
+.flab::before{content:"";position:absolute;left:-6px;top:50%;width:6px;height:6px;margin-top:-3px;border-radius:50%;background:currentColor;box-shadow:0 0 10px currentColor}
+.flab.warn{color:var(--ember);border-color:rgba(255,154,92,.45)}
+.flab.ok{color:#9effdb;border-color:rgba(158,255,219,.35)}
+.flab.trace{color:#ffc29c}
+.flab.flip{padding:3px 12px 3px 7px;margin:-12px 0 0 -6px}
+.flab.flip::before{left:auto;right:-6px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (min-width:761px) and (max-width:1100px){.flow-cap{max-width:calc(100% - 340px)}}
+@media (max-width:760px){.flow-cap{bottom:calc(19vh + env(safe-area-inset-bottom,0px));max-width:calc(100% - var(--gutter) - var(--gutter-r) - 28px)}#fhud{left:var(--gutter);right:var(--gutter-r);display:flex;flex-wrap:wrap;justify-content:flex-start;text-align:left;bottom:calc(7vh + 10px + env(safe-area-inset-bottom,0px));gap:6px;font-size:.62rem}#fhud span:nth-child(1){display:none}.flow-top{top:calc(env(safe-area-inset-top,0px) + 66px);font-size:.62rem}#frail{top:calc(env(safe-area-inset-top,0px) + 112px);transform:none;height:24vh}#frail button.on span{opacity:0}#frail button:focus-visible span{opacity:1}.flab{font-size:.68rem}}
+/* no WebGL: the film becomes a plain list of its scenes */
+.flow.static{height:auto;padding:120px var(--gutter-r) 120px var(--gutter)}
+.flow.static .flow-stage{display:none}
+.flow.static .sr{position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal;max-width:720px;margin:0 auto;padding-left:1.4em;display:grid;gap:18px;color:#c6cbd8}
+
+/*/FLOW-CSS*/
 </style>
 </head>
 <body style="margin:0">
@@ -213,6 +289,7 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;fl
   <div class="nav-links mono">
     <a href="#about" data-nav="1">소개</a>
     <a href="#works" data-nav="2">작업</a>
+    <a href="#flow" id="navFlow">흐름</a>
     <a href="#skills" data-nav="3">도구</a>
     <a href="#contact" data-nav="4">연락</a>
   </div>
@@ -232,7 +309,8 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;fl
           <p class="hero-line" style="margin-top:18px">물류 현장의 이해를 바탕으로, <span>AI와 시스템</span>을 활용해 운영 효율을 높입니다.</p>
         </div>
         <div class="hints">
-          <div class="hint mono"><i></i>화면을 길게 누르면 중력이 생깁니다</div>
+          <div class="hint mono" id="gHint" tabindex="-1"><i></i><span id="gHintT">길게 누르면 중력이 생기고, 100%가 되면 별이 태어납니다</span></div>
+          <button class="revive" id="revive" type="button" hidden>별을 다시 DANNY로</button>
           <div class="hint mono"><i></i><span id="xHint">X 키를 누르면 화면 속 코드가 보입니다</span></div>
         </div>
       </div>
@@ -250,7 +328,7 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;fl
         <dl class="spec mono">
           <dt>경력</dt><dd>우아한청년들 · 물류 운영 2년</dd>
           <dt>분야</dt><dd>입출고 · WMS · 재고 로스 관리</dd>
-          <dt>수상</dt><dd>개발경진대회 최우수상</dd>
+          <dt>수상</dt><dd>사내 개발경진대회 최우수상</dd>
         </dl>
       </div>
     </div>
@@ -269,9 +347,9 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;fl
         <article class="card feature" data-tilt>
           <canvas data-thumb="radar" aria-hidden="true"></canvas>
           <div class="card-body">
-            <div class="card-top mono"><span>재고 손실 관리 고도화</span><span class="award">★ 개발경진대회 최우수상</span></div>
+            <div class="card-top mono"><span>재고 손실 관리 고도화</span><span class="award">★ 사내 개발경진대회 최우수상</span></div>
             <h3>로스상품 추적시스템</h3>
-            <p>재고 손실률을 줄이기 위해 로스상품을 추적하고 관리하는 일을 시스템으로 만들었습니다. 손실 현황 파악과 원인 분석을 지원해 재고 로스 개선 활동의 기반을 마련했고, 현장 중심의 문제 정의와 구현 성과를 인정받아 개발경진대회 최우수상을 받았습니다.</p>
+            <p>재고 손실률을 줄이기 위해 로스상품을 추적하고 관리하는 일을 시스템으로 만들었습니다. 손실 현황 파악과 원인 분석을 지원해 재고 로스 개선 활동의 기반을 마련했고, 현장 중심의 문제 정의와 구현 성과를 인정받아 사내 개발경진대회 최우수상을 받았습니다.</p>
             <div class="chips"><span class="chip ex">최우수상</span><span class="chip">재고 로스 관리</span><span class="chip">상품 추적성 확보</span><span class="chip">손실 원인 분석 지원</span></div>
           </div>
         </article>
@@ -297,6 +375,21 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;fl
     </div>
   </section>
 
+<!--FLOW-HTML-->
+  <section class="flow" id="flow" aria-label="물류 흐름 시네마">
+    <div class="flow-stage">
+      <div class="flow-bar top"></div><div class="flow-bar bot"></div>
+      <div id="flabs" aria-hidden="true"></div>
+      <div class="flow-top mono"><span id="fscn">PROLOGUE · ONE ITEM</span><span><span class="fex">예시 데이터</span> · <span id="ftc">TC 13:20:00</span></span></div>
+      <div class="flow-cap" aria-live="polite"><span class="mono" id="fcK">PROLOGUE</span><h2 id="fcT">상품 하나가 지나가는 길</h2><p id="fcS">입고부터 배송까지, 물류 시스템은 상품 하나를 놓치지 않고 따라갑니다. 화면의 코드와 수치는 이해를 돕기 위한 예시입니다.</p></div>
+      <div id="fhud" class="mono" aria-hidden="true"></div>
+      <nav id="frail" aria-label="장면 이동"><i></i><button type="button" aria-label="PROLOGUE · 프롤로그 장면으로 이동"><span>PROLOGUE · 프롤로그</span></button><button type="button" aria-label="INBOUND · 입고 장면으로 이동"><span>INBOUND · 입고</span></button><button type="button" aria-label="INSPECTION · 검수 장면으로 이동"><span>INSPECTION · 검수</span></button><button type="button" aria-label="PUTAWAY · 적치 장면으로 이동"><span>PUTAWAY · 적치</span></button><button type="button" aria-label="LOSS TRACE · 실사와 로스 추적 장면으로 이동"><span>LOSS TRACE · 실사와 로스 추적</span></button><button type="button" aria-label="PICKING · 주문과 피킹 장면으로 이동"><span>PICKING · 주문과 피킹</span></button><button type="button" aria-label="OUTBOUND · 패킹과 출고 장면으로 이동"><span>OUTBOUND · 패킹과 출고</span></button><button type="button" aria-label="LAST MILE · 배송 장면으로 이동"><span>LAST MILE · 배송</span></button></nav>
+    </div>
+    <ol class="sr"><li>상품 하나가 지나가는 길. 입고부터 배송까지, 물류 시스템은 상품 하나를 놓치지 않고 따라갑니다. 화면의 코드와 수치는 이해를 돕기 위한 예시입니다.</li><li>트럭이 도크에 닿는 순간, 기록이 시작됩니다. 상자보다 데이터가 먼저 도착합니다. 입고 예정 정보(ASN)와 실제로 내린 물량을 맞춰 보는 일, 입출고 시스템이 가장 먼저 하는 일입니다.</li><li>바코드 하나로 수량, 상태, 유통기한을 확인합니다. 검수를 통과한 상품만 재고가 됩니다. 여기서 한 개가 틀리면 뒤의 모든 숫자가 함께 틀어집니다.</li><li>모든 상품은 주소를 가집니다. WMS가 빈 로케이션을 지정하고, 작업자는 그 주소에 상품을 놓은 뒤 로케이션 바코드를 스캔해 확정합니다. 열-베이-단, 예를 들면 C-05-3.</li><li>숫자가 하나 비면, 시스템이 그 길을 거슬러 갑니다. 실사에서 차이가 나면 그 칸을 보류하고, 적치에서 검수, 입고까지 이력을 되짚어 원인을 찾습니다. 이번에는 지시된 칸보다 한 단 위에 놓인 상품이었습니다.</li><li>주문이 들어오면, 정해진 순서로 꺼냅니다. 재고가 할당되고, 작업자는 피킹 리스트의 동선을 따라 로케이션과 상품을 스캔하며 담습니다. 방금 되찾은 상품도 이 주문에 담깁니다.</li><li>확인하고, 포장하고, 문을 나섭니다. 출고 검수를 마친 상품은 포장되어 배차된 라이더에게 인계됩니다. 출고가 확정되는 순간 재고에서 빠집니다.</li><li>그리고 누군가의 문 앞에 도착합니다. 창고 안의 정확함은 결국 고객이 받는 시간과 신뢰가 됩니다. 대니가 시스템을 만드는 이유입니다.</li></ol>
+  </section>
+
+
+<!--/FLOW-HTML-->
   <section class="skills" data-field="3" id="skills">
     <div class="wrap">
       <div class="col">
@@ -338,10 +431,499 @@ footer{position:relative;z-index:2;display:flex;justify-content:space-between;fl
 <div id="hud" aria-hidden="true"><svg viewBox="-46 -46 92 92"><circle r="40" stroke="rgba(255,154,92,.25)"></circle><circle id="hudArc" r="40" stroke="#ff9a5c" stroke-dasharray="251.3" stroke-dashoffset="251.3" transform="rotate(-90)"></circle></svg><span class="t mono" id="hudT">GRAVITY 0%</span></div>
 <div class="cur ring" aria-hidden="true"></div><div class="cur dot" aria-hidden="true"></div>
 <div class="toast mono" id="toast" role="status"></div>
+<div id="whiteout" aria-hidden="true"></div>
+<div id="star" aria-hidden="true"><div class="lead"></div><div class="stc mono"><b id="stName">DANNY-1</b><span id="stT">표면 온도 30,000 K</span><span id="stC">분광형 B0V</span><span id="stR">반지름 0.00 R☉ · 광도 0.0 L☉</span></div></div>
+<div id="cine" class="mono" aria-live="polite"><small id="cineS">GRAVITY 100%</small><strong id="cineT">임계점을 넘었습니다</strong></div>
+<script type="x-shader/x-fragment" id="sunFS">
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#define LOWP 1
+#endif
+uniform vec2 uRes; uniform float uTime; uniform vec2 uCenter; uniform float uRadius;
+uniform float uIgnite; uniform float uCool; uniform vec2 uMouse; uniform float uFade;
+
+#define TAU 6.28318531
+#define WRAPW 0.0104719755
+// swirl sense of the singularity: -1 clockwise (matches the page's hold swirl), +1 counter-clockwise
+#define SPIN -1.
+#define UB0 .632455
+const vec3 ICE=vec3(.737,.827,1.);
+const vec3 EMBER=vec3(1.,.604,.361);
+const vec3 LUM=vec3(.2126,.7152,.0722);
+
+// loop-safe phase: rate f (rad/s) snapped to whole cycles per 600 s; argument stays in [0,TAU)
+float ph(float f){ return TAU*fract(uTime/600.*floor(f/WRAPW+.5)); }
+vec2 orbit(float spd,float k){ float a=TAU*fract(uTime/600.*k); return vec2(cos(a),sin(a))*(spd/(WRAPW*k)); }
+float at2(float y,float x){ return atan(y,(abs(x)+abs(y))<1e-4?1.:x); }
+float adiff(float a,float b){ float d=a-b; return d-TAU*floor(d/TAU+.5); }
+float sfall(float hi,float lo,float x){ return 1.-smoothstep(lo,hi,x); }
+// newborn -> settled colour through a neutral midpoint (a straight blue->ember mix passes through lavender)
+float gTA=0., gTB=0.;   // set once in main from uCool
+vec3 tmix(vec3 a,vec3 m,vec3 b){ return mix(mix(a,m,gTA),b,gTB); }
+
+#ifdef LOWP
+// fp16: keep hash arguments small (integer ids wrapped to 289) so fract() keeps its resolution
+float h11(float p){ return fract(sin(mod(p,289.)*1.731+.37)*43.7); }
+float h21(vec2 p){ return h11(mod(p.x,289.)+h11(p.y)*137.); }
+vec2 h22(vec2 p){ p=mod(p,289.); return fract(sin(vec2(dot(p,vec2(1.271,3.117)),dot(p,vec2(2.695,1.833)))+.5)*43.7); }
+#else
+float h11(float p){ p=fract(p*.1031); p*=p+33.33; p*=p+p; return fract(p); }
+float h21(vec2 p){ vec3 p3=fract(vec3(p.xyx)*.1031); p3+=dot(p3,p3.yzx+33.33); return fract((p3.x+p3.y)*p3.z); }
+vec2 h22(vec2 p){ vec3 p3=fract(vec3(p.xyx)*vec3(.1031,.1030,.0973)); p3+=dot(p3,p3.yzx+33.33); return fract((p3.xx+p3.yz)*p3.zy); }
+#endif
+float n1(float x){ float i=floor(x),f=fract(x); f=f*f*(3.-2.*f); return mix(h11(i),h11(i+1.),f); }
+float n1p(float x,float P){ float f=fract(x); float a=mod(x-f,P), b=a+1.; b=b<P?b:0.; f=f*f*(3.-2.*f); return mix(h11(a),h11(b),f); }
+// 2D value noise, periodic with period P (per axis)
+float n2pp(vec2 x,vec2 P){ vec2 f=fract(x); vec2 i0=mod(x-f,P), i1=i0+1.; i1*=step(i1,P-.5); f=f*f*(3.-2.*f);
+  float a=h21(i0),b=h21(vec2(i1.x,i0.y)),c=h21(vec2(i0.x,i1.y)),d=h21(i1);
+  return mix(mix(a,b,f.x),mix(c,d,f.x),f.y); }
+
+#ifdef LOWP
+// fp16: the simplex permutation overflows, use a smooth trig field instead
+float sn3(vec3 v){ return sin(v.x*1.3+sin(v.y*1.7+v.z))*cos(v.y*1.1+sin(v.z*1.9-v.x)); }
+#else
+vec4 perm(vec4 x){ return mod(((x*34.)+1.)*x,289.); }
+float sn3(vec3 v){
+  const vec2 C=vec2(1./6.,1./3.); const vec4 D=vec4(0.,.5,1.,2.);
+  vec3 i=floor(v+dot(v,C.yyy)); vec3 x0=v-i+dot(i,C.xxx);
+  vec3 g=step(x0.yzx,x0.xyz); vec3 l=1.-g; vec3 i1=min(g.xyz,l.zxy); vec3 i2=max(g.xyz,l.zxy);
+  vec3 x1=x0-i1+C.xxx; vec3 x2=x0-i2+C.yyy; vec3 x3=x0-D.yyy;
+  i=mod(i,289.);
+  vec4 p=perm(perm(perm(i.z+vec4(0.,i1.z,i2.z,1.))+i.y+vec4(0.,i1.y,i2.y,1.))+i.x+vec4(0.,i1.x,i2.x,1.));
+  vec3 ns=.142857142857*D.wyz-D.xzx;
+  vec4 j=p-49.*floor(p*ns.z*ns.z);
+  vec4 x_=floor(j*ns.z); vec4 y_=floor(j-7.*x_);
+  vec4 x=x_*ns.x+ns.yyyy; vec4 y=y_*ns.x+ns.yyyy; vec4 h=1.-abs(x)-abs(y);
+  vec4 b0=vec4(x.xy,y.xy); vec4 b1=vec4(x.zw,y.zw);
+  vec4 s0=floor(b0)*2.+1.; vec4 s1=floor(b1)*2.+1.; vec4 sh=-step(h,vec4(0.));
+  vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy; vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+  vec3 p0=vec3(a0.xy,h.x); vec3 p1=vec3(a0.zw,h.y); vec3 p2=vec3(a1.xy,h.z); vec3 p3=vec3(a1.zw,h.w);
+  vec4 nr=1.79284291400159-.85373472095314*vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3));
+  p0*=nr.x; p1*=nr.y; p2*=nr.z; p3*=nr.w;
+  vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.); m=m*m;
+  return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+}
+#endif
+
+// animated 2D Voronoi, lattice periodic in x with P cells: x=F1, y=F2-F1 (lane), z=cell hash
+vec3 vor(vec2 x,float tph,float P){
+  vec2 n=floor(x), f=fract(x); float iP=1./P;
+  float F1=8.,F2=8.,id=0.;
+  for(int j=-1;j<=1;j++) for(int i=-1;i<=1;i++){
+    vec2 g=vec2(float(i),float(j));
+    float cx=n.x+g.x; vec2 h=h22(vec2(cx-P*floor(cx*iP),n.y+g.y));
+    vec2 r=g+.5+.44*sin(tph+TAU*h)-f; float d=dot(r,r);
+    if(d<F1){F2=F1;F1=d;id=h.x;} else if(d<F2){F2=d;}
+  }
+  F1=sqrt(F1); return vec3(F1,sqrt(F2)-F1,id);
+}
+
+float gSpotVis=1.;
+
+// sunspots: cheap nearest-spot search (centres precomputed), then one full shading pass
+void spotNear(vec3 s,vec3 c,float sz,float seed,inout vec4 best,inout vec3 bc){
+  vec3 dv=s-c; float d0=dot(dv,dv)*(1./(sz*sz));
+  if(d0<best.x){ best=vec4(d0,sz,seed,0.); bc=c; }
+}
+// ragged, slightly elongated spot with an off-centre lumpy umbra and soft wavy penumbral filaments
+void spotShade(vec3 s,vec3 c,float sz,float seed,float meso,inout float I,inout float pen){
+  vec3 dv=s-c;
+  vec3 e1=normalize(cross(vec3(0.,1.,0.),c)); vec3 e2=cross(c,e1);
+  vec2 lc=vec2(dot(dv,e1)*.8,dot(dv,e2));
+  float a=at2(lc.y,lc.x);
+  float ne=n1p(a/TAU*7.+seed,7.)-.5, nu=n1p(a/TAU*5.+seed*7.,5.)-.5;
+  float edge=1.+.2*ne+.12*meso;
+  float dn=length(lc)/(sz*edge);
+  float fib=.5+.5*sin(a*44.+2.2*sin(a*7.+seed*20.)+dn*3.);
+  vec2 uc=(lc-sz*.24*(h22(vec2(seed,3.))-.5))*vec2(1.,1.35);
+  float du=length(uc)/(sz*.4*(1.+.4*nu+.1*ne));
+  float umb=1.-smoothstep(.55,1.15,du);
+  float pn=(1.-smoothstep(.72,1.02,dn))*(1.-umb*umb);
+  I*=mix(1.,.64+.14*fib,pn*gSpotVis)*mix(1.,.24,umb*gSpotVis);
+  pen+=(pn+umb)*gSpotVis;
+}
+
+// one layer of outward-drifting sparks in (field-line label, log r) cells
+float sparks(float lab,float lr,float gL,float r,float Rn,float P,float M,float v,float seed,float dens,float wpx,float lpx,float burst){
+  float a=mod(lab+seed,P);
+  float y=lr*M-60.*fract(uTime*v/60.)-burst;
+  vec2 id=floor(vec2(a,y)); vec2 f=fract(vec2(a,y))-.5;
+  id.y=mod(id.y,60.);
+  float hx=h21(id+seed);
+  if(hx>dens) return 0.;
+  vec2 o=(h22(id*1.37+seed)-.5)*vec2(.55,.5);
+  vec2 dd=(f-o)*vec2(Rn/gL,r/M*Rn);
+  float tw=.55+.45*sin(ph(2.5)+TAU*hx);
+  return exp(-dd.x*dd.x/(wpx*wpx)-dd.y*dd.y/(lpx*lpx))*tw*(.35+.65*hx/dens)*sfall(dens,dens*.75,hx);
+}
+
+float G(float x){return exp(-x*x);}
+vec3 G(vec3 x){return exp(-x*x);}
+
+void main(){
+  if(uFade<.002){ gl_FragColor=vec4(0.,0.,0.,1.); return; }
+  float ig=clamp(uIgnite,0.,1.), cool=clamp(uCool,0.,1.), young=1.-cool;
+  gTA=smoothstep(0.,.5,cool); gTB=smoothstep(.45,1.,cool);
+  vec2 fc=gl_FragCoord.xy;
+  float Rf=max(uRadius,1.), px=1./Rf;
+  vec2 q=(fc-uCenter)*px; float rq=length(q); float aq=at2(q.y,q.x);
+
+  // ---------- timeline
+  float x=clamp((ig-.2)/.8,0.,1.);
+  float grow=1.-exp(-6.5*x)*(cos(7.5*x)+.62*sin(7.5*x));   // damped spring: overshoot ~6% then settle
+  float born=step(.2,ig);
+  float e=max(ig-.2,0.);
+  float fl=smoothstep(.197,.204,ig)*exp(-e*30.);           // ignition flash (short: the DOM flash does the whiteout)
+  float lum=born*min(grow*grow,1.2)*(1.+.6*young);
+  vec2 md=uMouse-uCenter;
+  float mAng=at2(md.y,md.x), mDist=length(md)*px;
+  float prox=exp(-max(mDist-1.,0.)*1.3);
+  // flare site: a fixed active longitude that leans toward the pointer, never jumps
+  float thF=.2+.5*sin(adiff(mAng,.2))*smoothstep(.2,1.4,mDist);
+  vec2 dF=vec2(cos(thF),sin(thF)), tF=vec2(-dF.y,dF.x);
+  float fcy=uTime/10.; float fph=fract(fcy); float famp=.45+.55*h11(mod(floor(fcy),60.)+3.);
+  float fI=(smoothstep(0.,.05,fph)*exp(-fph*4.2)*famp+.18)*born*smoothstep(.55,1.,ig)*(.55+.6*prox);
+
+  vec3 hdr=vec3(0.);
+  float detail=0., shade=1.;
+
+  // ---------- lens: anamorphic streak + ring ghosts
+  {
+    float ay=abs(q.y);
+    if(ay<.1){
+      float sl=(lum*.45+fl*9.)*mix(.15,1.,smoothstep(.85*grow,1.05*grow+.02,rq));
+      float ax0=abs(q.x);
+      float core=G(ay/(1.1*px+.0015))*exp(-ax0*.5);
+      float wide=G(ay/.03)*exp(-ax0*1.4);
+      float knot=G(ay/.012)*exp(-ax0*3.2);
+      hdr+=sl*vec3(.42,.6,1.)*(core*.45+wide*.07+knot*.25);
+    }
+    vec2 gv=(.5*uRes-uCenter+(uMouse-.5*uRes)*.35)*px;
+    float gl0=length(gv);
+    gv=(gl0>1e-3?gv/gl0:vec2(.7071,-.7071))*max(gl0,.9);
+    float gs=(lum*.03+fl*.2)*smoothstep(grow*1.02,grow*1.12+.02,rq);   // never over the photosphere
+    for(int i=0;i<2;i++){
+      float fi=float(i);
+      float k=fi==0.?1.45:2.75;
+      float rg=fi==0.?.24:.42;
+      float dg=length(q-gv*k);
+      if(dg<rg*1.1+.03){
+        vec3 rgc=G((dg-rg*vec3(1.035,1.,.965))/(.004+rg*.02));
+        float fill=sfall(rg,rg*.7,dg)*.12;
+        hdr+=gs*(rgc*vec3(.9,.95,1.)+fill*vec3(.5,.62,1.))*(fi==1.?.6:1.);
+      }
+    }
+  }
+
+  // ---------- singularity: photon ring, lensed accretion filaments, trembling core
+  if(ig<.24){
+    float pre=clamp(ig/.2,0.,1.);
+    float k=1.-smoothstep(.2,.24,ig);
+    float crit=smoothstep(.13,.2,ig)*k;                       // pre-ignition instability
+    float trem=sin(ig*170.+ph(23.));
+    float rp=mix(.3,.028,pre*pre)*(1.+.07*crit*trem);
+    float aS=SPIN*aq;
+    float dop=.5+.5*cos(aq-2.4);
+    float w=max(px*1.1,.0035);
+    float ring=G((rq-rp)/w)*(1.1+2.4*pre)*(.35+1.1*dop)*(1.+.5*crit*trem);
+    float ring2=G((rq-rp*1.075)/(w*2.2))*.3*(1.2-dop);
+    float lr=log(max(rq,1e-4)/rp);
+    float spin=6.*ig+600.*ig*ig*ig+ph(.8);
+    float sv=(aS+2.4*lr-spin)/TAU*84.;
+    float st=n1p(sv,84.); st*=st; st*=st;
+    float sv2=(aS+1.3*lr-spin*1.4)/TAU*31.;
+    float st2=n1p(sv2,31.);
+    float disk=smoothstep(0.,.18,lr)*exp(-max(lr,0.)*1.7)*sfall(2.3,.6,lr)*(.25+1.6*st*(.4+.6*st2))*(.3+.7*dop);
+    float halo=exp(-abs(lr)*2.6)*.07;
+    float p2=pre*pre;
+    float core=exp(-rq/(.004+.02*(1.-pre)))*p2*p2*pre*4.*(1.+6.*crit*(1.+.5*trem));
+    // six short diffraction spikes (3 blades): distance to the nearest blade axis, analytic
+    float spk=exp(-rq*abs(sin(3.*(aq-.26)))*.3333/(.0018+rq*.004))*exp(-rq*6.);
+    vec3 dc=mix(EMBER*vec3(1.,.8,.7),ICE,exp(-max(lr,0.)*1.8));
+    hdr+=k*(vec3(.85,.92,1.)*(ring+ring2+halo)+dc*disk*(1.1+1.8*pre)+vec3(.9,.95,1.)*core)+vec3(.8,.88,1.)*spk*crit*1.2;
+  }
+
+  // ---------- ignition: compact flash, decelerating torn shock ring, slower ejecta shell
+  if(ig>=.195&&ig<.75){
+    float rqs=rq*max(1.,Rf/(.32*min(uRes.x,uRes.y)));     // broad flash terms scale with the viewport, not R (no grey lift on phones)
+    hdr+=fl*vec3(.92,.96,1.)*(26./(1.+rq*rq*196.)+.35*exp(-rqs*1.2));
+    float ray=n1p(aq/TAU*260.,260.); ray*=ray; ray*=ray;
+    float ray2=n1p(aq/TAU*38.+7.,38.);
+    hdr+=fl*vec3(.8,.9,1.)*ray*(.3+ray2)*1.9/(1.+rqs*rqs*6.);
+    float sh=smoothstep(.199,.202,ig)*exp(-e*6.)*(1.-smoothstep(.16,.34,e));
+    float fil=n1p(aq/TAU*220.,220.); fil=.25+.75*fil*fil*fil;
+    float fil2=n1p(aq/TAU*57.+3.,57.);
+    float sr=(.04+5.6*sqrt(e)*(1.-.25*e))*(1.+.014*(ray2-.5)+.007*(fil2-.5));   // decelerating, torn
+    float dr=rq-sr;
+    float wv=(.006+e*.05)*(dr>0.?.55:2.6);                     // razor leading edge, soft wake
+    float fr=exp(-dr*dr/(wv*wv));
+    vec3 front=fr*(dr>0.?vec3(.9,.95,1.05):vec3(1.05,.98,.9));
+    float sw=.01+e*.35;
+    float wake=exp(min(dr,0.)/sw)*step(dr,0.)*fil*(.5+.5*fil2);
+    hdr+=sh*(front*(.6+.5*fil)*3.2+wake*mix(EMBER,ICE,.6)*.9);
+    float rsh=(grow+e*3.2)*(1.+.05*(ray2-.5));
+    float shA=smoothstep(0.,.04,e)*(1.-smoothstep(.12,.3,e));
+    float str=.55*fil2+.45*ray2;
+    float sd=(rq-rsh)/(.012+e*.045);
+    hdr+=mix(ICE,vec3(1.),.3)*exp(-sd*sd)*(.08+1.1*str*str)*shA*.7;   // thin, torn second shell
+  }
+
+  // ---------- the star
+  if(born>0.){
+    float Rn=Rf*max(grow,.002);
+    vec2 p=(fc-uCenter)/Rn;
+    float r0=length(p);
+    if(r0<3.5){
+#ifndef LOWP
+      float shm=smoothstep(.82,1.,r0)*exp(-max(r0-1.,0.)*2.5);
+      p+=shm*.0032*vec2(sin(p.y*43.+p.x*11.+ph(2.1)),sin(p.x*47.-p.y*13.-ph(2.6)));
+#endif
+      float ang=at2(p.y,p.x);
+      // newborn limb boils, relaxes as the star settles
+      p/=1.+(1.-smoothstep(.3,.95,x))*.011*(sin(ang*11.+ph(.64))*.6+sin(ang*29.-ph(1.2))*.4);
+      float r=max(length(p),1e-4);
+      float aa=1.4/Rn;
+      float disc=1.-smoothstep(1.-aa*.5,1.+aa*.5,r);
+      float soft=mix(.06,0.,smoothstep(0.,.5,x));
+
+      // ===== photosphere
+      if(r<1.+aa){
+        vec2 pp=r<1.?p:p/r;
+        float mu=sqrt(max(1.-dot(pp,pp),0.));
+        vec3 n=vec3(pp,mu);
+        float ra=-ph(2.*WRAPW);                           // one rotation per 300 s
+        float cr=cos(ra),sr=sin(ra);
+        vec3 s=vec3(cr*n.x+sr*n.z,n.y,-sr*n.x+cr*n.z);
+        vec2 o2=orbit(.22,1.); vec3 o=vec3(o2.x,o2.y,o2.x*.6-o2.y*.7);
+        // granulation: Voronoi on an azimuthal-equidistant unfolding; the lattice slides with the rotation
+        float rc=length(pp); vec2 cp=pp*(asin(min(rc,1.))/max(rc,1e-4));
+        float Pg=floor(TAU*70.*clamp(Rf/240.,.6,1.5)+.5);   // lattice period + 300 s slide: integer, independent of cool
+        float gsz=mix(46.,70.,cool)*clamp(Rf/240.,.6,1.5);  // continuous cell scale (newborn cells stay coarser)
+        float meso=sn3(s*9.+o*.12);
+        float sg=sn3(s*13.-o*.06+vec3(3.1,0.,0.));
+        vec2 gx=cp*gsz+vec2(13.1,7.7)+vec2(meso,sg)*1.2;
+        gx.x-=Pg*fract(uTime/300.);
+#ifdef LOWP
+        vec3 vg=vor(gx,0.,Pg);
+#else
+        vec3 vg=vor(gx,ph(.45),Pg);
+#endif
+        float cpp=gsz/(Rn*max(mu,.05));                  // cells per pixel (with radial foreshortening)
+        float lodG=1.-smoothstep(.24,.6,cpp);
+        float lane=smoothstep(0.,.26+.15*young+.3*cpp+.08*meso,vg.y);
+        float gcell=(.36+.64*lane)*(1.-.7*vg.x*vg.x)*(.7+.3*sin(ph(.3)+vg.z*TAU))*(.8+.2*meso)-.48;
+        float gran=mix(gcell*lodG,meso*.5,young*.6);
+        // limb darkening (quadratic law) + Eddington-Barbier colour index across the whole radius
+        float om=1.-mu;
+        float LI=1.-.47*om-.23*om*om;
+        float tau=sqrt(sqrt(.22+1.03*mu));
+        float ldk=smoothstep(.72,1.03,tau);
+        float k1=smoothstep(0.,.35,cool), k2=smoothstep(.3,.65,cool), k3=smoothstep(.6,1.,cool);
+        vec3 chC=mix(mix(mix(vec3(.55,.7,1.),vec3(.9,.93,1.),k1),vec3(1.,.88,.69),k2),vec3(1.,.77,.47),k3);
+        vec3 chL=mix(mix(mix(vec3(.34,.48,1.),vec3(.88,.85,.84),k1),vec3(1.,.58,.32),k2),vec3(1.,.36,.11),k3);
+        vec3 ch=mix(chL,chC,ldk);
+        float gc=.34*(.3+.7*mu)*mix(.3,1.,smoothstep(.1,.8,cool));
+        float I=LI*(1.+gc*.45*gran);
+        float pen=0., act=0.; gSpotVis=smoothstep(.2,.7,cool)*smoothstep(.3,.8,x);
+        vec4 bs=vec4(1e3,1.,0.,0.); vec3 bc=vec3(0.,0.,1.);
+        spotNear(s,vec3(.33047,.26673,.90534),.075,1.,bs,bc);
+        spotNear(s,vec3(.56438,.23770,.79055),.04,4.,bs,bc);
+        spotNear(s,vec3(.54543,-.20846,-.81182),.06,7.,bs,bc);
+        spotNear(s,vec3(.37873,-.24740,-.89183),.032,9.,bs,bc);
+        spotNear(s,vec3(-.97050,.11971,-.20928),.05,12.,bs,bc);
+        spotNear(s,vec3(-.67403,-.29552,.67702),.028,15.,bs,bc);
+        act=exp(-bs.x*.22);                                // plage around the nearest spot group
+        if(bs.x<3.07&&gSpotVis>0.) spotShade(s,bc,bs.y,bs.z,meso,I,pen);
+        act=min(act,1.)*gSpotVis;
+        float om15=om*sqrt(om);
+        float fac=smoothstep(.55,.95,1.-abs(sg))*smoothstep(-.4,.5,meso)*om15*.28*(1.+2.*act)+act*(.015+.09*om15);
+        float sp1=min(pen,1.);
+        I*=1.+fac*(1.-.8*sp1);
+        ch=mix(ch,chL*vec3(1.,.8,.7),clamp((1.-I/max(LI,.05))*.4,0.,1.)*cool);
+        ch=mix(ch,chC,clamp(fac*1.2,0.,1.));
+        float I0=mix(2.5,2.05,cool)*(1.+1.5*fl);
+        vec3 ph3=ch*I0*I;
+        // flare ribbons: two thin bright strands just inside the limb under the flare site
+        vec2 lf=vec2(dot(pp,tF),dot(pp,dF)-.95);
+        if(lf.y>-.04&&abs(lf.x)<.22){
+          float rib=(G((lf.y-.008)/.0045)+.7*G((lf.y+.014)/.0045))*G(lf.x/.07)*(.45+.8*n1(lf.x*30.+3.));
+          ph3+=rib*fI*vec3(1.,.92,.8)*2.;
+        }
+        hdr+=ph3*disc*(1.-soft*.5);
+        float nofl=1.-min(fl*3.,1.);
+        // display-space limb shade so the darkening reads across the whole radius, not just the outer rim
+        shade=mix(1.,.7+.3*sqrt(mu),disc*nofl);
+        detail=gc*gran*disc*.55*clamp(Rn/300.,.45,1.)*(1.-sp1)*nofl;
+      }
+
+      // ===== atmosphere
+      if(r>1.-aa){
+        float hgt=r-1.;
+        float outside=smoothstep(-aa,aa,hgt);
+        vec2 pn=p/r;
+        // --- chromosphere rim + spicules
+        if(hgt<.06){
+          float Nsp=floor(Rf*TAU/3.2);
+          float sa=(ang+hgt*.9)/TAU;
+          float sp=n1p(sa*Nsp,Nsp); sp*=sp;
+          float N2=max(floor(Nsp*.21),1.);
+          float spl=.007+.02*n1p(sa*N2+5.,N2);
+          float chrom=exp(-max(hgt,0.)/.005)*1.1+sp*sfall(spl,0.,hgt)*1.1;
+          vec3 chc=tmix(vec3(.6,.72,1.),vec3(.92,.76,.68),vec3(1.,.36,.15));
+          hdr+=chrom*chc*outside*(1.+.6*young);
+        }
+
+        // --- coronal field: tilted dipole + weak quadrupole + source surface, leaning toward the pointer
+        float axA=1.72+.1*sin(ph(WRAPW))+.12*sin(adiff(mAng,1.72))*smoothstep(.2,1.4,mDist);
+        vec2 ax=vec2(cos(axA),sin(axA));
+        float cth=dot(pn,ax), sth=pn.x*ax.y-pn.y*ax.x;
+        const float RS=2.5;
+        float rr=clamp(r,1.,RS);
+        float isr=inversesqrt(rr);
+        float nP=n1p(ang/TAU*6.+.5,6.)-.5;
+        float u=sth*isr*(1.+.14*cth/rr)+.025*nP*min(hgt*3.,1.);
+        float au=abs(u);
+        float ub=UB0+.05*nP*sth;
+        float closed=smoothstep(ub-.015,ub+.03,au);
+        // continuous field-line label: south open lines reflected past the cusp (period 4*UB0, jump at the south pole)
+        float sgu=u<0.?-1.:1.;
+        float lam=mix(u,sgu*2.*UB0-u,(1.-closed)*(1.-smoothstep(-.03,.03,cth)));
+        float gu=isr/r*sqrt(cth*cth+(r<RS?.25*sth*sth:0.));      // |grad u| per radius
+        float dirB=1.+(.35+1.6*fI)*G(adiff(ang,thF)/.32);
+        float corVis=smoothstep(.25,.9,x);
+        if(r<3.1){
+          float Pf=floor(Rf/3.*4.*UB0+.5); float Kf=Pf/(4.*UB0);
+          float lpp=Kf*gu/Rn;
+          vec2 fo=orbit(.06,1.);
+          float fine=n1p(lam*Kf+fo.x*.2,Pf); fine=fine*fine*fine;
+          fine=mix(.18,fine,1.-smoothstep(.3,.75,lpp));
+          float Pm=floor(Pf*.21+.5), Pc=26., Pl=floor(Pf*.09+.5), Pa=floor(Pf*.33+.5);
+          float mid=n1p(lam*Pm/(4.*UB0)+31.,Pm);
+          float coarse=n1p(lam*Pc/(4.*UB0)+7.,Pc);
+          float bun=smoothstep(.3,.82,coarse);                 // loops come in a few bright bundles
+          float flick=n2pp(vec2(lam*Pl/(4.*UB0),fo.y*.5),vec2(Pl,1e4));
+          float along=n2pp(vec2(lam*Pa/(4.*UB0),mix(log(r)*5.,cth*9.,closed)-72.*fract(uTime/600.)),vec2(Pa,72.));
+          float env=(exp(-hgt*4.6)*.8+.09*pow(max(r,.1),-2.2))*outside*(1.-smoothstep(2.3,3.1,r));
+          float apexF=mix(.8,1.,smoothstep(.05,.5,abs(cth)));
+          float helm=closed*(.7+1.1*exp(-(au-ub)*9.))*exp(-hgt*.5)*(.3+1.15*bun)*apexF;
+          float open=(1.-closed)*(.38+.5*coarse);
+          float stalk=G((ub-au)/.022)*smoothstep(RS*.75,RS*1.05,r)*1.4;
+          float sheet=G(cth/.012)*smoothstep(RS*.8,RS*1.1,r)*(1.-closed*.7);
+          float cor=env*(helm+open)*(.2+1.9*fine*(.3+.7*mid)*along*along*1.6)*(.7+.6*flick)*dirB;
+          cor+=env*(stalk*(.5+.8*fine)+sheet*.5)*dirB;
+          vec3 warm=mix(EMBER,vec3(1.,.82,.62),.35);
+          vec3 cc=mix(warm,ICE*vec3(.95,1.,1.08),mix(smoothstep(1.0,1.4,r),smoothstep(1.2,2.6,r)*.4,closed));
+          cc=tmix(ICE*vec3(.9,.97,1.1),vec3(.9,.86,.84),cc);
+          hdr+=cor*cc*.55*corVis;
+        }
+
+#ifndef LOWP
+        // --- sparks: radial lattice at birth, morphing to field-line cells; gone by ~2R in steady state
+        float bsp=born*exp(-e*4.);
+        float sR=min(mix(2.05,3.5,bsp),3.5);
+        if(r<sR){
+          float burst=born*(1.-exp(-e*5.))*26.;
+          float fw=smoothstep(.25,.6,x);
+          float thm=adiff(axA,ang);                 // magnetic angle (= atan(sth,cth)), jumps at the south pole like lam
+          float smask=smoothstep(1.02,1.2,r)*exp(-max(r-1.25,0.)*1.5)*(1.-.75*closed*fw)*(1.-smoothstep(sR*.7,sR,r));
+          float sw=max(.75,Rf*.0028);
+          float lr=log(r);
+          float P1=90., P2=52.;
+          float lab=mix(thm*(2./TAU),lam*(1./(4.*UB0)),fw), gLb=max(mix(2./(TAU*r),gu*(1./(4.*UB0)),fw),.006);
+          float Pm=2.-fw;
+          float s1=sparks(lab*P1,lr,gLb*P1,r,Rn,Pm*P1,14.,.5,3.7,.11+.25*bsp,sw,sw*(3.+20.*bsp),burst);
+          float s2=sparks(lab*P2,lr,gLb*P2,r,Rn,Pm*P2,8.,.3,11.3,.08+.25*bsp,sw*1.3,sw*(4.+26.*bsp),burst*.7);
+          float sm=(s1+s2*.8)*smask*dirB*(1.+2.*bsp);
+          vec3 scol=mix(EMBER*vec3(1.,.9,.8)*1.4,ICE*1.15,smoothstep(1.15,2.,r));
+          scol=tmix(ICE*1.2,vec3(1.,.95,.92),scol);
+          hdr+=sm*scol*1.3*smoothstep(.0,.15,x);
+        }
+#endif
+
+        // --- glow
+        float gl=(.55*exp(-hgt*10.)+.15*exp(-hgt*2.4)+.05*exp(-hgt*.7)*(1.-smoothstep(2.4,3.5,r)))*outside;
+        vec3 gcol=tmix(vec3(.6,.75,1.),vec3(.92,.85,.8),vec3(1.,.62,.34));
+        hdr+=gl*gcol*(.8+1.4*young*young)*(1.+fl*3.);
+
+        float promVis=smoothstep(.55,1.,x);
+        // --- prominence: twisted flux rope of fine strands, leaning toward the pointer
+        {
+          float PA=2.42;
+          float lean=sin(adiff(mAng,PA))*smoothstep(.2,1.4,mDist);
+          vec2 dP=vec2(cos(PA),sin(PA)), tP=vec2(-dP.y,dP.x);
+          vec2 lp=vec2(dot(p,tP),dot(p,dP)-.935);
+          lp.x-=lean*.2*max(lp.y,0.);
+          lp.y/=1.5;
+          float pr=length(lp);
+          if(abs(pr-.19)<.2&&hgt>-aa){
+            float pa=at2(lp.x,lp.y);
+            float wd=.02+.008*cos(pa*2.);
+            float cx=(pr-.19)/wd;
+            if(abs(cx)<6.){
+              float tw=pa*1.6+2.5*sin(ph(.05));
+              float s1p=n1(cx*3.2+tw+5.), s2p=n1(cx*6.1-tw*.8+11.);
+              float s2q=s2p*s2p;
+              float strands=s1p*s1p*s1p*.9+s2q*s2q*.7;
+              float knots=n2pp(vec2(cx*1.3,abs(pa)*8.-150.*fract(uTime/600.)),vec2(1e4,150.));
+              float penv=exp(-cx*cx*.45);
+              float legs=1.+.6*smoothstep(.8,1.5,abs(pa));
+              float prom=(penv*(.1+strands)*(.35+1.1*knots*knots)+.2*exp(-cx*cx*.12))*legs*smoothstep(-.002,.01,hgt);
+              vec3 pc=mix(vec3(1.,.32,.13),vec3(1.,.72,.45),strands);
+              pc=tmix(vec3(.65,.75,1.),vec3(.95,.72,.62),pc);
+              hdr+=prom*pc*2.*promVis;
+            }
+          }
+        }
+
+        // --- flare hot spot + outward jet filaments at the flare site
+        {
+          float da=adiff(ang,thF);
+          if(abs(da)<.75){
+            float dfs=length(p-dF*.99);
+            float jw=G(da/(.06+.05*min(hgt,2.)))*exp(-hgt*1.6)*smoothstep(0.,.03,hgt);
+            float jet=0.;
+            if(jw>.003){ float Pj=floor(Rf/1.5); jet=n1p(ang/TAU*Pj,Pj); jet=jet*jet*jet; }
+            hdr+=fI*(exp(-dfs*24.)*1.+jw*jet*.7)*mix(vec3(1.,.66,.4),vec3(1.,.92,.82),fI)*outside;
+          }
+        }
+        // --- flare arcade: a row of small post-flare loops standing on the limb (side by side, not nested)
+        {
+          vec2 la=vec2(dot(p,tF),dot(p,dF)-.997);
+          if(abs(la.x)<.12&&la.y>-.01&&la.y<.11&&hgt>-aa){
+            // row of loops side by side: repeat the tangential axis, one loop per cell
+            float cx=la.x/.026+.5, ci=floor(cx); float hk=h11(ci+7.);
+            float rho=.016+.014*hk;
+            vec2 lq=vec2((fract(cx)-.5)*.026,la.y); lq.x-=.15*lq.y*ci;   // outer loops splay outward
+            float d=(length(lq*vec2(1.,.75))-rho)/.0026;
+            float arc=G(d)*(.3+.6*h11(ci+3.))*(.4+.8*smoothstep(.2,.9,lq.y/rho))*sfall(.11,.05,abs(la.x));
+            arc*=smoothstep(-.004,.008,la.y);
+            arc+=G(length(la-vec2(0.,.025))/.035)*.3;
+            hdr+=arc*fI*mix(vec3(1.,.62,.36),vec3(1.,.9,.78),fI)*1.3*smoothstep(-.002,.01,hgt);
+          }
+        }
+      }
+    }
+  }
+
+  // ---------- tonemap: luminance shoulder keeps the hue (gold stays gold), partial per-channel roll-off in highlights
+  float L=dot(hdr,LUM);
+  float Lt=1.-exp(-L);
+  vec3 hp=hdr*(Lt/max(L,1e-4));
+  vec3 pc=1.-exp(-hdr);
+  vec3 col=mix(hp,pc,smoothstep(.45,1.,Lt)*.55);
+  col+=max(max(col.r,max(col.g,col.b))-1.,0.)*.5;
+  col=clamp(min(col,1.)*(1.+detail)*shade,0.,1.);
+  col+=(h21(fc+fract(uTime)*91.)-.5)/255.*step(.004,col.g);
+  gl_FragColor=vec4(max(col,0.)*uFade,1.);
+}
+</script>
 
 <script id="main">
 (() => {
 'use strict';
+document.documentElement.lang = 'ko';
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -361,12 +943,34 @@ const VS = `
 precision highp float;
 attribute vec3 p0,p1,p2,p3,p4; attribute vec4 aR;
 uniform mat4 uP; uniform vec3 uOff; uniform float uS;
-uniform float uT,uM,uIntro,uHold,uShock,uShockA,uPix,uSize,uAlpha,uAsp,uLensR,uRM;
-uniform vec2 uMouse,uHoldPt,uShockPt,uLensPt;
+uniform float uT,uM,uIntro,uHold,uShock,uShockA,uPix,uSize,uAlpha,uAsp,uLensR,uRM,uCrush,uSunMix,uSunR;
+uniform vec2 uMouse,uHoldPt,uShockPt,uLensPt,uSunPt,uSunNdc;
+uniform float uSunRn,uSunOcc;
+float sunA=1.,sunH=0.,sunB=0.;
 varying vec3 vC; varying float vA,vLens;
 vec3 rotY(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(c*p.x+s*p.z,p.y,-s*p.x+c*p.z);}
+// a newborn star's retinue: Keplerian disc, radial solar wind, sparks hugging the limb
+vec3 orbit(){
+  float R=uSunR, lane=aR.w;
+  vec3 c=vec3(uSunPt,0.);
+  if(lane<.6){
+    float r=R*(1.22+pow(aR.z,1.7)*2.5);
+    float a=aR.y*6.2832+uT*(.55/pow(r/R,1.5));
+    vec3 o=vec3(cos(a)*r,sin(a)*r*.2+(aR.x-.5)*.05*r,sin(a)*r);
+    float tz=-.2; o.xy=mat2(cos(tz),sin(tz),-sin(tz),cos(tz))*o.xy;
+    sunH=.55; sunB=step(o.z,0.); return c+o;
+  }
+  if(lane<.85){
+    float a=aR.y*6.2832, ph=fract(uT*.06+aR.x);
+    vec3 dir=normalize(vec3(cos(a),sin(a),(aR.z-.5)*1.4));
+    sunA=(1.-ph)*smoothstep(0.,.08,ph); sunH=.9; sunB=step(dir.z,0.);
+    return c+dir*R*(1.04+ph*3.4);
+  }
+  float a=aR.y*6.2832+uT*.04, r=R*(1.005+aR.z*.07+.03*sin(uT*1.9+aR.x*37.));
+  sunH=1.; return c+vec3(cos(a)*r,sin(a)*r,-.02);
+}
 vec3 shape(float i){
-  if(i<.5) return p0+vec3(0.,0.,sin(uT*.6+p0.x*1.4+p0.y)*.05);
+  if(i<.5){ vec3 t=p0+vec3(0.,0.,sin(uT*.6+p0.x*1.4+p0.y)*.05); return uSunMix>0.?mix(t,orbit(),uSunMix):t; }
   if(i<1.5) return rotY(p1,uT*.16);
   if(i<2.5){vec3 q=p2;q.y+=sin(q.x*1.2+uT*.9)*.2+cos(q.z*1.6+uT*.7)*.2+sin((q.x+q.z)*2.4-uT*1.3)*.05;return q;}
   if(i<3.5) return rotY(p3,sin(uT*.25)*.55-.35);
@@ -388,7 +992,8 @@ void main(){
   float pull=uHold*(.62+.38*aR.x);
   float ang=uHold*uHold*(2.6/(dhl+.25));
   vec2 rt=mat2(cos(ang),-sin(ang),sin(ang),cos(ang))*dh;
-  p.xy=uHoldPt+rt*(1.-pull*.93); p.z*=1.-uHold*.85; heat+=uHold*.9;
+  p.xy=uHoldPt+rt*(1.-mix(pull*.93,1.,uCrush)); p.z*=1.-mix(uHold*.85,1.,uCrush); heat+=uHold*.9+uCrush;
+  heat+=sunH*uSunMix*(1.-smoothstep(.5,1.5,uM));
   vec2 ds=p.xy-uShockPt; float dsl=length(ds);
   float ring=exp(-(dsl-uShock*4.2)*(dsl-uShock*4.2)*2.5)*exp(-uShock*1.1)*step(0.,uShock)*uShockA;
   p.xy+=ds/(dsl+1e-4)*ring*1.1; p.z+=ring*2.2*(aR.y-.5); heat+=ring*1.4;
@@ -402,7 +1007,8 @@ void main(){
   vec3 ice=vec3(.74,.83,1.), ember=vec3(1.,.6,.36);
   float spark=step(.965,aR.z);
   vC=mix(ice,ember,clamp(heat+spark,0.,1.));
-  vA=(.42+.58*aR.w)*uAlpha*(.6+.4*uIntro);
+  float occ=sunB*uSunOcc*(1.-g)*(1.-smoothstep(uSunRn*.9,uSunRn*1.02,length(vec2((ndc.x-uSunNdc.x)*uAsp,ndc.y-uSunNdc.y))));
+  vA=(.42+.58*aR.w)*uAlpha*(.6+.4*uIntro)*mix(1.,sunA,uSunMix)*(1.-occ);
 }`;
 const FS = `
 precision mediump float;
@@ -424,28 +1030,53 @@ try {
   gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
   gl.linkProgram(prog); if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
   gl.useProgram(prog);
-  ['uP','uOff','uS','uT','uM','uIntro','uHold','uShock','uShockA','uPix','uSize','uAlpha','uAsp','uLensR','uRM','uMouse','uHoldPt','uShockPt','uLensPt']
+  ['uP','uOff','uS','uT','uM','uIntro','uHold','uShock','uShockA','uPix','uSize','uAlpha','uAsp','uLensR','uRM','uMouse','uHoldPt','uShockPt','uLensPt','uCrush','uSunMix','uSunR','uSunPt','uSunNdc','uSunRn','uSunOcc']
     .forEach(n => U[n] = gl.getUniformLocation(prog, n));
 } catch (e) { glOK = false; console.warn('WebGL off', e); }
 if (!glOK) document.documentElement.classList.add('no-gl');
+canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); glOK = false; document.documentElement.classList.add('no-gl'); });
+canvas.addEventListener('webglcontextrestored', () => location.reload());
 
 const A = { p0: new Float32Array(N*3), p1: new Float32Array(N*3), p2: new Float32Array(N*3), p3: new Float32Array(N*3), p4: new Float32Array(N*3), aR: new Float32Array(N*4) };
 for (let i = 0; i < N*4; i++) A.aR[i] = Math.random();
-function upload(name, size) {
+// several programs share one context: every pass binds exactly the attributes it reads and disables the rest
+const ATTR_SIZE = { p0: 3, p1: 3, p2: 3, p3: 3, p4: 3, aR: 4 };
+let enabled = new Set();
+function bindAttribs(list) {
+  const want = new Set(list.map(a => a.loc));
+  enabled.forEach(l => { if (!want.has(l)) gl.disableVertexAttribArray(l); });
+  list.forEach(a => { gl.bindBuffer(gl.ARRAY_BUFFER, a.buf); gl.enableVertexAttribArray(a.loc); gl.vertexAttribPointer(a.loc, a.size, gl.FLOAT, false, a.stride || 0, a.offset || 0); });
+  enabled = want;
+}
+const PART_ATTRS = [];
+function upload(name) {
   if (!glOK) return;
   const loc = gl.getAttribLocation(prog, name); if (loc < 0) return;
-  if (!buf[name]) buf[name] = gl.createBuffer();
+  if (!buf[name]) { buf[name] = gl.createBuffer(); PART_ATTRS.push({ loc, buf: buf[name], size: ATTR_SIZE[name] }); }
   gl.bindBuffer(gl.ARRAY_BUFFER, buf[name]); gl.bufferData(gl.ARRAY_BUFFER, A[name], gl.STATIC_DRAW);
-  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, size, gl.FLOAT, false, 0, 0);
 }
+// full-screen pass for the star
+let sunProg = null, SU = {}, quadBuf = null, quadLoc = -1;
+if (glOK) try {
+  sunProg = gl.createProgram();
+  gl.attachShader(sunProg, sh(gl.VERTEX_SHADER, 'attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}'));
+  gl.attachShader(sunProg, sh(gl.FRAGMENT_SHADER, $('#sunFS').textContent));
+  gl.linkProgram(sunProg); if (!gl.getProgramParameter(sunProg, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(sunProg));
+  ['uRes','uTime','uCenter','uRadius','uIgnite','uCool','uMouse','uFade'].forEach(n => SU[n] = gl.getUniformLocation(sunProg, n));
+  quadBuf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, quadBuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,1,-1,-1,1,-1,1,1,-1,1,1]), gl.STATIC_DRAW);
+  quadLoc = gl.getAttribLocation(sunProg, 'a');
+} catch (e) { sunProg = null; console.warn('star shader off', e); }
 
 const FOV = 45 * Math.PI / 180, CAMZ = 6;
 let W = innerWidth, H = innerHeight, vis = { h: 1, w: 1 }, mobile = W < 760;
 function viewAt(dist) { const h = 2 * Math.tan(FOV / 2) * dist; return { h, w: h * W / H }; }
 
+const sampCv = document.createElement('canvas'), sampX = sampCv.getContext('2d', { willReadFrequently: true });
 function sampleText(arr, str, worldW) {
-  const cw = 1600, ch = 520, c = document.createElement('canvas'); c.width = cw; c.height = ch;
-  const x = c.getContext('2d');
+  const cw = 1600, ch = 520, c = sampCv, x = sampX; c.width = cw; c.height = ch;
+  let sd = 1; for (const k of str) sd = (sd * 31 + k.charCodeAt(0)) % 2147483647;
+  const rnd = () => (sd = (sd * 16807) % 2147483647) / 2147483647;
   let fs = 400; x.font = `800 ${fs}px "Bricolage Grotesque", "IBM Plex Sans KR", sans-serif`;
   const m = x.measureText(str).width; fs = Math.floor(fs * Math.min(1, (cw * .94) / m));
   x.font = `800 ${fs}px "Bricolage Grotesque", "IBM Plex Sans KR", sans-serif`;
@@ -454,12 +1085,12 @@ function sampleText(arr, str, worldW) {
   for (let y = 0; y < ch; y += 3) for (let xx = 0; xx < cw; xx += 3) if (d[(y * cw + xx) * 4 + 3] > 130) pts.push(xx, y);
   const n = pts.length / 2, sc = worldW / cw;
   if (!n) return;
-  for (let i = n - 1; i > 0; i--) { const j = (Math.random() * (i + 1)) | 0; [pts[i*2], pts[j*2]] = [pts[j*2], pts[i*2]]; [pts[i*2+1], pts[j*2+1]] = [pts[j*2+1], pts[i*2+1]]; }
+  for (let i = n - 1; i > 0; i--) { const j = (rnd() * (i + 1)) | 0; [pts[i*2], pts[j*2]] = [pts[j*2], pts[i*2]]; [pts[i*2+1], pts[j*2+1]] = [pts[j*2+1], pts[i*2+1]]; }
   for (let i = 0; i < N; i++) {
     const k = i % n, extra = i >= n ? .012 : .004;
-    arr[i*3]   = (pts[k*2] - cw / 2) * sc + (Math.random() - .5) * extra * 2;
-    arr[i*3+1] = -(pts[k*2+1] - ch / 2) * sc + (Math.random() - .5) * extra * 2;
-    arr[i*3+2] = (Math.random() - .5) * .12;
+    arr[i*3]   = (pts[k*2] - cw / 2) * sc + (rnd() - .5) * extra * 2;
+    arr[i*3+1] = -(pts[k*2+1] - ch / 2) * sc + (rnd() - .5) * extra * 2;
+    arr[i*3+2] = (rnd() - .5) * .12;
   }
 }
 function buildPlanet(arr) {
@@ -526,27 +1157,30 @@ function buildHelix(arr) {
   }
 }
 let CFG;
-function layout() {
+function layout(full = true) {
   W = innerWidth; H = innerHeight; mobile = W < 760;
   const dpr = Math.min(devicePixelRatio || 1, 2);
   canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
   vis = viewAt(CAMZ);
   if (!glOK) return;
+  gl.useProgram(prog);
   gl.viewport(0, 0, canvas.width, canvas.height);
   const f = 1 / Math.tan(FOV / 2), asp = W / H, nr = .1, fr = 100;
   gl.uniformMatrix4fv(U.uP, false, new Float32Array([f/asp,0,0,0, 0,f,0,0, 0,0,(fr+nr)/(nr-fr),-1, 0,0,(2*fr*nr)/(nr-fr),0]));
   gl.uniform1f(U.uPix, dpr); gl.uniform1f(U.uAsp, asp);
   gl.uniform1f(U.uSize, mobile ? 21 : 17);
-  sampleText(A.p0, 'DANNY', Math.min(vis.w * (mobile ? .9 : .82), vis.h * 1.75));
-  sampleText(A.p4, 'HELLO', Math.min(vis.w * (mobile ? .86 : .62), vis.h * 1.35));
-  buildTerrain(A.p2);
-  upload('p0', 3); upload('p2', 3); upload('p4', 3);
+  if (full) {
+    sampleText(A.p0, 'DANNY', Math.min(vis.w * (mobile ? .9 : .82), vis.h * 1.75));
+    sampleText(A.p4, 'HELLO', Math.min(vis.w * (mobile ? .86 : .62), vis.h * 1.35));
+    buildTerrain(A.p2);
+    upload('p0'); upload('p2'); upload('p4');
+  }
   CFG = mobile
     ? { x: [0, 0, 0, 0, 0], y: [.55, .35, 0, .1, .75], s: [1, .78, 1, .72, 1], a: [1, .38, .55, .38, .9] }
     : { x: [0, vis.w * .24, 0, -vis.w * .25, 0], y: [.42, 0, 0, 0, .7], s: [1, 1, 1, 1, 1], a: [1, 1, .8, 1, 1] };
   measure();
 }
-if (glOK) { buildPlanet(A.p1); buildRack(A.p3); upload('p1', 3); upload('p3', 3); upload('aR', 4); }
+if (glOK) { buildPlanet(A.p1); buildRack(A.p3); upload('p1'); upload('p3'); upload('aR'); }
 
 /* ================= scroll → formation ================= */
 const secs = $$('[data-field]');
@@ -567,7 +1201,7 @@ function cfgAt(arr, m) { const i = Math.floor(m), f = m - i; return lerp(arr[i],
 
 /* ================= pointer, gravity, lens ================= */
 const mouse = { x: W / 2, y: H / 2, nx: 9, ny: 9, active: false };
-const hold = { on: false, v: 0, timer: 0, sx: 0, sy: 0 };
+const hold = { on: false, v: 0, timer: 0, sx: 0, sy: 0, id: null };
 let shockT = -1, shockA = 0, shockPt = [0, 0], holdPt = [0, 0];
 const hud = $('#hud'), hudArc = $('#hudArc'), hudT = $('#hudT');
 function toLocal(px, py, off, s) {
@@ -578,18 +1212,31 @@ addEventListener('pointermove', e => {
   mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
   if (hold.timer && !hold.on && Math.hypot(e.clientX - hold.sx, e.clientY - hold.sy) > 12) { clearTimeout(hold.timer); hold.timer = 0; }
 }, { passive: true });
+function noSelect(on) {
+  document.documentElement.style.userSelect = document.documentElement.style.webkitUserSelect = on ? 'none' : '';
+  if (on) { const sel = getSelection(); if (sel) sel.removeAllRanges(); }
+}
+function cancelHold() {
+  clearTimeout(hold.timer); hold.timer = 0; hold.id = null; noSelect(false);
+  if (hold.on) { hold.on = false; hud.classList.remove('on'); }
+}
 addEventListener('pointerdown', e => {
   mouse.x = e.clientX; mouse.y = e.clientY; mouse.active = true;
+  if (hold.id != null && e.pointerId !== hold.id) { cancelHold(); return; }   // two fingers: pinch or scroll, not gravity
   if (e.button > 0 || e.target.closest('a,button,.card,input,dl,p,h2,.mail')) return;
-  hold.sx = e.clientX; hold.sy = e.clientY;
-  hold.timer = setTimeout(() => { hold.on = true; hold.timer = 0; hud.classList.add('on'); }, e.pointerType === 'mouse' ? 110 : 300);
+  if (!introOn || intro < .9 || sun.state === 'critical' || (sun.state !== 'none' && M < .3) || (FLOW && FLOW.vis > .5)) return;
+  clearTimeout(hold.timer);
+  hold.id = e.pointerId; hold.sx = e.clientX; hold.sy = e.clientY;
+  hold.timer = setTimeout(() => { hold.on = true; hold.timer = 0; hud.classList.add('on'); noSelect(true); }, e.pointerType === 'mouse' ? 110 : 300);
 });
 function release(e) {
-  clearTimeout(hold.timer); hold.timer = 0;
+  if (e && e.pointerId != null && hold.id != null && e.pointerId !== hold.id) return;
+  clearTimeout(hold.timer); hold.timer = 0; hold.id = null; noSelect(false);
+  if (hold.on && sun.state === 'critical') { hold.on = false; hud.classList.remove('on'); return; }
   if (hold.on) {
     hold.on = false; hud.classList.remove('on');
     if (hold.v > .12) {
-      shockT = 0; shockA = .35 + hold.v * .9; shockPt = holdPt.slice();
+      shockT = 0; shockA = (.35 + hold.v * .9) * (RM ? .3 : 1); shockPt = holdPt.slice();
       const fl = document.createElement('div'); fl.className = 'flash'; fl.style.left = mouse.x + 'px'; fl.style.top = mouse.y + 'px';
       document.body.appendChild(fl); setTimeout(() => fl.remove(), 1200);
     }
@@ -602,25 +1249,650 @@ document.addEventListener('contextmenu', e => { if (hold.on || hold.timer) e.pre
 document.addEventListener('pointerleave', () => { mouse.active = false; });
 
 const lens = $('#lens'), xbtn = $('#xbtn'), code = $('#code'), lensRead = $('#lensRead');
-let lensOn = false, lensS = 0;
+let lensOn = false, lensS = 0, lensSS = '';
+const lensPt = { x: innerWidth / 2, y: innerHeight * .45 };
 const src = $('#main').textContent.trim();
 code.textContent = (src + '\n\n' + src).replace(/^\s{0,2}/gm, '');
 function toggleLens(v) {
   lensOn = v ?? !lensOn; xbtn.setAttribute('aria-pressed', lensOn);
-  if (lensOn && !mouse.active) { mouse.x = W / 2; mouse.y = H * .45; }
+  if (lensOn && !mouse.active) { lensPt.x = W / 2; lensPt.y = H * .45; }
   toast(lensOn ? 'X-RAY 켜짐 · 렌즈 안에서 코드와 입자 좌표가 보입니다' : 'X-RAY 꺼짐');
 }
 xbtn.addEventListener('click', () => toggleLens());
-addEventListener('keydown', e => { if ((e.key === 'x' || e.key === 'X') && !e.metaKey && !e.ctrlKey && !e.altKey) toggleLens(); if (e.key === 'Escape' && lensOn) toggleLens(false); });
+// X matches the physical key, so it also works with a Korean IME in 한글 mode; it only fires when no control has focus
+addEventListener('keydown', e => {
+  const isX = e.code === 'KeyX' || e.key === 'x' || e.key === 'X' || e.key === 'ㅌ', ae = document.activeElement;
+  const free = !ae || ae === document.body || ae === document.documentElement || ae === xbtn || ae.id === 'gHint';
+  if (isX && free && !e.repeat && !e.metaKey && !e.ctrlKey && !e.altKey) toggleLens();
+  if (e.key === 'Escape' && lensOn) toggleLens(false);
+});
+
+//FLOW-JS
+// scene copy for the logistics film; hud(s, live) returns the three readout lines for local progress s
+const FLOW_CAPS = [
+  { k: 'PROLOGUE', en: 'ONE ITEM', t: '상품 하나가 지나가는 길', s: '입고부터 배송까지, 물류 시스템은 상품 하나를 놓치지 않고 따라갑니다. 화면의 코드와 수치는 이해를 돕기 위한 예시입니다.',
+    hud: () => ['WAREHOUSE 40 × 24 m', 'RACK 7열 · 8베이 · 4단', 'LOCATION 224'] },
+  { k: '01 · 입고', en: 'INBOUND', t: '트럭이 도크에 닿는 순간, 기록이 시작됩니다', s: '상자보다 데이터가 먼저 도착합니다. 입고 예정 정보(ASN)와 실제로 내린 물량을 맞춰 보는 일, 입출고 시스템이 가장 먼저 하는 일입니다.',
+    hud: (s, l) => ['ASN-0001 · 예시', `DOCK 02 · 하차 ${Math.min(l.NB, Math.max(0, Math.round((s - .45) / .5 * l.NB)))}/${l.NB}`, '관련 작업 · 입출고 관리 시스템'] },
+  { k: '02 · 검수', en: 'INSPECTION', t: '바코드 하나로 수량, 상태, 유통기한을 확인합니다', s: '검수를 통과한 상품만 재고가 됩니다. 여기서 한 개가 틀리면 뒤의 모든 숫자가 함께 틀어집니다.',
+    hud: (s, l) => [`SCAN ${l.scanned}/${l.NB}`, '수량 불일치 0 · 파손 0', '유통기한·로트 기록 · FEFO 기준'] },
+  { k: '03 · 적치', en: 'PUTAWAY', t: '모든 상품은 주소를 가집니다', s: 'WMS가 빈 로케이션을 지정하고, 작업자는 그 주소에 상품을 놓은 뒤 로케이션 바코드를 스캔해 확정합니다. 열-베이-단, 예를 들면 C-05-3.',
+    hud: (s, l) => ['LOCATION A-01-1 … G-08-4', `적치 완료 ${l.put}/${l.NB}`, '관련 작업 · WMS 기능 개발'] },
+  { k: '04 · 실사와 로스 추적', en: 'LOSS TRACE', t: '숫자가 하나 비면, 시스템이 그 길을 거슬러 갑니다', s: '실사에서 차이가 나면 그 칸을 보류하고, 적치에서 검수, 입고까지 이력을 되짚어 원인을 찾습니다. 이번에는 지시된 칸보다 한 단 위에 놓인 상품이었습니다.',
+    hud: s => ['CYCLE COUNT · C열', s < .3 ? '실사 진행 중' : s < .78 ? '차이 −1 · 보류 · 이력 추적 중' : s < .95 ? '원인: 적치 위치 오류 · 재배치 중' : '차이 0 · 정합성 복구', '관련 작업 · 로스상품 추적시스템'] },
+  { k: '05 · 주문과 피킹', en: 'PICKING', t: '주문이 들어오면, 정해진 순서로 꺼냅니다', s: '재고가 할당되고, 작업자는 피킹 리스트의 동선을 따라 로케이션과 상품을 스캔하며 담습니다. 방금 되찾은 상품도 이 주문에 담깁니다.',
+    hud: (s, l) => ['ORDER #0001 · 3개 품목', `피킹 ${l.picked}/3`, '재고가 맞아야 결품이 없습니다'] },
+  { k: '06 · 패킹과 출고', en: 'OUTBOUND', t: '확인하고, 포장하고, 문을 나섭니다', s: '출고 검수를 마친 상품은 포장되어 배차된 라이더에게 인계됩니다. 출고가 확정되는 순간 재고에서 빠집니다.',
+    hud: s => ['PACK 1 BOX · 3 ITEMS', s < .28 ? '출고 검수 중' : s < .46 ? '포장 중' : '포장 완료', s > .7 ? '출고 확정 · OUT 01' : '출고 대기'] },
+  { k: '07 · 배송', en: 'LAST MILE', t: '그리고 누군가의 문 앞에 도착합니다', s: '창고 안의 정확함은 결국 고객이 받는 시간과 신뢰가 됩니다. 대니가 시스템을 만드는 이유입니다.',
+    hud: (s, l) => ['RIDER 배차 완료', l.arrive >= 1 ? '배송 완료' : `도착까지 ${String(l.eta).padStart(2, '0')}분`, `주문부터 ${l.since}분`] },
+];
+
+/* ================= logistics cinema: one order's journey ================= */
+// A pinned, scroll-scrubbed film drawn in the same WebGL context: glowing lines + points in a metric world.
+// Warehouse floor x[-20,20] z[-12,12] (m), y up; the city for last mile lies east of x=24.
+const FLOW = (() => {
+  const sec = $('#flow');
+  if (!sec || !glOK) return null;
+  const isMob = () => innerWidth < 760;
+  const V3 = {
+    sub: (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]],
+    cross: (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]],
+    dot: (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2],
+    norm: a => { const l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; },
+    lerp: (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)],
+  };
+  const M4 = {
+    persp(fy, a, n, f) { const t = 1 / Math.tan(fy / 2); return [t / a, 0, 0, 0, 0, t, 0, 0, 0, 0, (f + n) / (n - f), -1, 0, 0, 2 * f * n / (n - f), 0]; },
+    look(e, c, u) {
+      const z = V3.norm(V3.sub(e, c)), x = V3.norm(V3.cross(u, z)), y = V3.cross(z, x);
+      return [x[0], y[0], z[0], 0, x[1], y[1], z[1], 0, x[2], y[2], z[2], 0, -V3.dot(x, e), -V3.dot(y, e), -V3.dot(z, e), 1];
+    },
+    mul(a, b) { const o = new Array(16); for (let c = 0; c < 4; c++) for (let r = 0; r < 4; r++) { let v = 0; for (let k = 0; k < 4; k++) v += a[k * 4 + r] * b[c * 4 + k]; o[c * 4 + r] = v; } return o; },
+  };
+
+  /* ---------- program ---------- */
+  // uMirror draws the same geometry flipped under a glossy floor; uFocus/uDof fake a lens: out-of-focus
+  // lines dim, out-of-focus points swell into bokeh.
+  const FVS = `
+precision highp float;
+attribute vec3 aP; attribute vec4 aC; attribute float aS;
+uniform mat4 uVP; uniform vec3 uEye; uniform float uFog,uPix,uFade,uPt,uMirror,uFocus,uDof,uBuild;
+varying vec4 vC; varying float vPt;
+void main(){
+  vPt=uPt;
+  vec3 P=aP; float m=1.;
+  if(uMirror>.5){ P.y=-P.y; m=.2*exp(-aP.y*.28); }
+  vec4 c=uVP*vec4(P,1.);
+  gl_Position=c;
+  float d=distance(P,uEye);
+  float f=exp(-d*uFog)*smoothstep(.4,2.2,d);
+  float df=clamp(abs(d-uFocus)/max(uFocus,1.)*uDof,0.,1.);
+  // uBuild: the warehouse assembles itself from the centre outwards and upwards, a hot seam at the front
+  float rv=uBuild>=1.?1.:smoothstep(0.,3.,uBuild*58.-length(aP.xz)-aP.y*2.5);
+  float seam=rv*(1.-rv)*4.;
+  vC=vec4(mix(aC.rgb,vec3(1.,.72,.45),seam*.7),aC.a*f*uFade*m*mix(1.,.3,df)*(rv+seam*1.6)*1.3);
+  gl_PointSize=uPt>.5?clamp(aS*uPix*26./max(c.w,.3)*(1.+df*2.2),1.,72.*uPix):1.;
+  if(uPt>.5) vC.a*=mix(1.,.45,df);
+}`;
+  const FFS = `
+precision mediump float;
+varying vec4 vC; varying float vPt;
+void main(){
+  float a=vC.a;
+  if(vPt>.5){ vec2 q=gl_PointCoord-.5; float r=length(q); a*=pow(smoothstep(.5,0.,r),1.6)+.0; }
+  gl_FragColor=vec4(vC.rgb*a,1.);
+}`;
+  let fp;
+  try {
+    fp = gl.createProgram();
+    gl.attachShader(fp, sh(gl.VERTEX_SHADER, FVS)); gl.attachShader(fp, sh(gl.FRAGMENT_SHADER, FFS));
+    gl.bindAttribLocation(fp, 0, 'aP');
+    gl.linkProgram(fp); if (!gl.getProgramParameter(fp, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(fp));
+  } catch (e) { console.warn('flow off', e); return null; }
+  const FU = {}; ['uVP', 'uEye', 'uFog', 'uPix', 'uFade', 'uPt', 'uMirror', 'uFocus', 'uDof', 'uBuild'].forEach(n => FU[n] = gl.getUniformLocation(fp, n));
+
+  /* ---------- post: the film is drawn off-screen, then bloomed and composited with lens fringing ---------- */
+  const PQ = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, PQ); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1]), gl.STATIC_DRAW);
+  const PVS = 'attribute vec2 a;varying vec2 v;void main(){v=a*.5+.5;gl_Position=vec4(a,0.,1.);}';
+  const mk = (fs, us) => { const p = gl.createProgram(); gl.attachShader(p, sh(gl.VERTEX_SHADER, PVS)); gl.attachShader(p, sh(gl.FRAGMENT_SHADER, fs)); gl.bindAttribLocation(p, 0, 'a'); gl.linkProgram(p); if (!gl.getProgramParameter(p, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(p)); const u = {}; us.forEach(n => u[n] = gl.getUniformLocation(p, n)); return { p, u, attrs: [{ loc: gl.getAttribLocation(p, 'a'), buf: PQ, size: 2 }] }; };
+  let PDOWN, PBLUR, PCOMP, post = null;
+  try {
+    PDOWN = mk('precision mediump float;varying vec2 v;uniform sampler2D t;uniform vec2 px;void main(){vec3 c=texture2D(t,v+px*vec2(-1.,-1.)).rgb+texture2D(t,v+px*vec2(1.,-1.)).rgb+texture2D(t,v+px*vec2(-1.,1.)).rgb+texture2D(t,v+px*vec2(1.,1.)).rgb;gl_FragColor=vec4(c*.25,1.);}', ['t', 'px']);
+    PBLUR = mk('precision mediump float;varying vec2 v;uniform sampler2D t;uniform vec2 d;void main(){vec3 c=texture2D(t,v).rgb*.227027;c+=(texture2D(t,v+d*1.384615).rgb+texture2D(t,v-d*1.384615).rgb)*.316216;c+=(texture2D(t,v+d*3.230769).rgb+texture2D(t,v-d*3.230769).rgb)*.070270;gl_FragColor=vec4(c,1.);}', ['t', 'd']);
+    PCOMP = mk('precision mediump float;varying vec2 v;uniform sampler2D s,b;uniform float k,ca,f,g;void main(){vec2 q=v-.5;vec2 o=q*dot(q,q)*ca;vec3 c=vec3(texture2D(s,v+o).r,texture2D(s,v).g,texture2D(s,v-o).b);c+=texture2D(b,v).rgb*k;c*=1.-dot(q,q)*.9;gl_FragColor=vec4(c*f,1.);}', ['s', 'b', 'k', 'ca', 'f']);
+    post = {};
+  } catch (e) { console.warn('flow post off', e); post = null; }
+  function target(w, h) {
+    const t = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, t);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+    [gl.TEXTURE_MIN_FILTER, gl.TEXTURE_MAG_FILTER].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.LINEAR));
+    [gl.TEXTURE_WRAP_S, gl.TEXTURE_WRAP_T].forEach(k => gl.texParameteri(gl.TEXTURE_2D, k, gl.CLAMP_TO_EDGE));
+    const f = gl.createFramebuffer(); gl.bindFramebuffer(gl.FRAMEBUFFER, f); gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, t, 0);
+    const ok = gl.checkFramebufferStatus(gl.FRAMEBUFFER) === gl.FRAMEBUFFER_COMPLETE; gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    return ok ? { t, f, w, h } : null;
+  }
+  function ensurePost() {
+    if (!post) return false;
+    const w = canvas.width, h = canvas.height;
+    if (post.w === w && post.h === h) return post.ok;
+    [post.S, post.A, post.B].forEach(x => { if (x) { gl.deleteTexture(x.t); gl.deleteFramebuffer(x.f); } });
+    const qw = Math.max(1, w >> 2), qh = Math.max(1, h >> 2);
+    post.S = target(w, h); post.A = target(qw, qh); post.B = target(qw, qh); post.w = w; post.h = h;
+    post.ok = !!(post.S && post.A && post.B);
+    return post.ok;
+  }
+  function pass(P, dst, setup) { gl.useProgram(P.p); bindAttribs(P.attrs); gl.bindFramebuffer(gl.FRAMEBUFFER, dst ? dst.f : null); gl.viewport(0, 0, dst ? dst.w : canvas.width, dst ? dst.h : canvas.height); setup(P.u); gl.drawArrays(gl.TRIANGLES, 0, 6); }
+  const tex = (unit, t) => { gl.activeTexture(gl.TEXTURE0 + unit); gl.bindTexture(gl.TEXTURE_2D, t); };
+  const LOC = { aP: gl.getAttribLocation(fp, 'aP'), aC: gl.getAttribLocation(fp, 'aC'), aS: gl.getAttribLocation(fp, 'aS') };
+  const STRIDE = 32;
+  const attrsFor = b => [{ loc: LOC.aP, buf: b, size: 3, stride: STRIDE, offset: 0 }, { loc: LOC.aC, buf: b, size: 4, stride: STRIDE, offset: 12 }, { loc: LOC.aS, buf: b, size: 1, stride: STRIDE, offset: 28 }];
+
+  /* ---------- vertex batches ---------- */
+  class Batch {
+    constructor(cap, dyn) { this.a = new Float32Array(cap * 8); this.n = 0; this.buf = gl.createBuffer(); this.dyn = dyn; this.attrs = attrsFor(this.buf); }
+    v(x, y, z, c, a, s) { if ((this.n + 1) * 8 > this.a.length) return; const o = this.n * 8, A = this.a; A[o] = x; A[o + 1] = y; A[o + 2] = z; A[o + 3] = c[0]; A[o + 4] = c[1]; A[o + 5] = c[2]; A[o + 6] = a; A[o + 7] = s || 1; this.n++; }
+    l(p, q, c, a, a2) { this.v(p[0], p[1], p[2], c, a); this.v(q[0], q[1], q[2], c, a2 ?? a); }
+    box(cx, y0, cz, sx, sy, sz, c, a) {
+      const x0 = cx - sx / 2, x1 = cx + sx / 2, z0 = cz - sz / 2, z1 = cz + sz / 2, y1 = y0 + sy;
+      const P = [[x0, y0, z0], [x1, y0, z0], [x1, y0, z1], [x0, y0, z1], [x0, y1, z0], [x1, y1, z0], [x1, y1, z1], [x0, y1, z1]];
+      [[0, 1], [1, 2], [2, 3], [3, 0], [4, 5], [5, 6], [6, 7], [7, 4], [0, 4], [1, 5], [2, 6], [3, 7]].forEach(([i, j]) => this.l(P[i], P[j], c, a));
+    }
+    poly(pts, c, a, closed) { for (let i = 0; i < pts.length - (closed ? 0 : 1); i++) this.l(pts[i], pts[(i + 1) % pts.length], c, a); }
+    upload() { gl.bindBuffer(gl.ARRAY_BUFFER, this.buf); gl.bufferData(gl.ARRAY_BUFFER, this.a.subarray(0, this.n * 8), this.dyn ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW); }
+    draw(mode) { if (!this.n) return; bindAttribs(this.attrs); gl.drawArrays(mode, 0, this.n); }
+  }
+  const ICE_C = [.74, .83, 1], EMB_C = [1, .6, .36], WHT = [1, .97, .92], GRN = [.62, 1, .86], DIM = [.45, .52, .7];
+
+  /* ---------- world ---------- */
+  const ROWS = 7, BAYS = 8, LEVS = 4;
+  const rowX = i => -6 + i * 2.8, bayZ = j => -7 + j * 2, levY = k => .12 + k * 1.5;
+  const code = (i, j, k) => 'ABCDEFG'[i] + '-' + String(j + 1).padStart(2, '0') + '-' + (k + 1);
+  const slot = (i, j, k) => [rowX(i), levY(k), bayZ(j)];
+  const DOCK_Z = [-8, -4, 0, 4], IN_DOCK = 1, ARCH_X = -14, CONV_Y = .8;
+  const LOST = { i: 2, j: 4, k: 2 }, MIS = { i: 2, j: 4, k: 3 };          // C-05-3 expected, found at C-05-4
+  const PICKS = [{ i: 1, j: 2, k: 1 }, { i: 3, j: 6, k: 0 }, { i: 2, j: 4, k: 2 }]; // the recovered item is the last pick
+  const PACK = [15.5, .9, -4], OUT_Z = 4;
+  // deterministic pseudo random so every visitor sees the same film
+  let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const filled = [];
+  for (let i = 0; i < ROWS; i++) for (let j = 0; j < BAYS; j++) for (let k = 0; k < LEVS; k++) {
+    const lostish = (i === LOST.i && j === LOST.j && (k === LOST.k || k === MIS.k));
+    filled.push(!lostish && rnd() > .22);
+  }
+  const isFilled = (i, j, k) => filled[(i * BAYS + j) * LEVS + k];
+
+  const wh = new Batch(30000, false), city = new Batch(30000, false), dust = new Batch(1400, false), cityPts = new Batch(4000, false);
+  // floor grid + walls
+  for (let x = -20; x <= 20; x += 2) wh.l([x, 0, -12], [x, 0, 12], DIM, x % 10 === 0 ? .2 : .08);
+  for (let z = -12; z <= 12; z += 2) wh.l([-20, 0, z], [20, 0, z], DIM, z % 6 === 0 ? .2 : .08);
+  const Hh = 9, corners = [[-20, -12], [20, -12], [20, 12], [-20, 12]];
+  corners.forEach(([x, z], i) => { const [x2, z2] = corners[(i + 1) % 4]; wh.l([x, 0, z], [x2, 0, z2], ICE_C, .35); wh.l([x, Hh, z], [x2, Hh, z2], ICE_C, .12); wh.l([x, 0, z], [x, Hh, z], ICE_C, .18); });
+  for (let x = -20; x <= 20; x += 5) wh.l([x, Hh, -12], [x, Hh, 12], DIM, .06);
+  // zones painted on the floor
+  const zone = (x0, z0, x1, z1, a) => wh.poly([[x0, .01, z0], [x1, .01, z0], [x1, .01, z1], [x0, .01, z1]], ICE_C, a, true);
+  zone(-19.5, -10, -9.5, 2, .22); zone(-8, -9.6, 12.2, 8.6, .12); zone(13, -8, 19.5, 2, .22); zone(13, 2.6, 19.5, 6, .2);
+  // dock doors (west, inbound) and outbound door (east)
+  DOCK_Z.forEach(z => wh.poly([[-20, 0, z - 1.5], [-20, 3.6, z - 1.5], [-20, 3.6, z + 1.5], [-20, 0, z + 1.5]], ICE_C, .45));
+  wh.poly([[20, 0, OUT_Z - 1.5], [20, 3.6, OUT_Z - 1.5], [20, 3.6, OUT_Z + 1.5], [20, 0, OUT_Z + 1.5]], ICE_C, .45);
+  // racks
+  for (let i = 0; i < ROWS; i++) {
+    const x = rowX(i), d = .55, z0 = bayZ(0) - 1, z1 = bayZ(BAYS - 1) + 1;
+    for (let j = 0; j <= BAYS; j++) { const z = z0 + j * 2; wh.l([x - d, 0, z], [x - d, 6.1, z], ICE_C, .32); wh.l([x + d, 0, z], [x + d, 6.1, z], ICE_C, .32); }
+    for (let k = 0; k <= LEVS; k++) { const y = .1 + k * 1.5; wh.l([x - d, y, z0], [x - d, y, z1], ICE_C, .26); wh.l([x + d, y, z0], [x + d, y, z1], ICE_C, .26); }
+    for (let j = 0; j < BAYS; j++) for (let k = 0; k < LEVS; k++) if (isFilled(i, j, k)) wh.box(x, levY(k) + .02, bayZ(j), .86, .8 + rnd() * .3, 1.55, ICE_C, .11);
+  }
+  // inbound conveyor (dock 02 → arch → putaway lane), outbound conveyor (packing → east door)
+  const IN_PATH = [[-19.6, CONV_Y, DOCK_Z[IN_DOCK]], [-9.4, CONV_Y, DOCK_Z[IN_DOCK]]];
+  const OUT_PATH = [[16.8, CONV_Y, -2.4], [16.8, CONV_Y, OUT_Z], [19.6, CONV_Y, OUT_Z]];
+  const rails = (path, w) => { for (let i = 0; i < path.length - 1; i++) { const a = path[i], b = path[i + 1], dx = b[0] - a[0], dz = b[2] - a[2], L = Math.hypot(dx, dz), nx = -dz / L * w, nz = dx / L * w;
+    wh.l([a[0] + nx, a[1], a[2] + nz], [b[0] + nx, b[1], b[2] + nz], ICE_C, .5); wh.l([a[0] - nx, a[1], a[2] - nz], [b[0] - nx, b[1], b[2] - nz], ICE_C, .5);
+    for (let s = 0; s < L; s += .45) { const t = s / L, px = lerp(a[0], b[0], t), pz = lerp(a[2], b[2], t); wh.l([px + nx, a[1], pz + nz], [px - nx, a[1], pz - nz], ICE_C, .14); wh.l([px + nx, 0, pz + nz], [px + nx, a[1], pz + nz], DIM, .05); } } };
+  rails(IN_PATH, .45); rails(OUT_PATH, .45);
+  // scan arch
+  wh.poly([[ARCH_X, 0, DOCK_Z[IN_DOCK] - 1.1], [ARCH_X, 2.4, DOCK_Z[IN_DOCK] - 1.1], [ARCH_X, 2.4, DOCK_Z[IN_DOCK] + 1.1], [ARCH_X, 0, DOCK_Z[IN_DOCK] + 1.1]], ICE_C, .7);
+  // packing stations
+  for (let n = 0; n < 3; n++) wh.box(15.5, 0, -7 + n * 3, 2.4, .9, 1.4, ICE_C, .32);
+  // dust motes
+  for (let n = 0; n < 1200; n++) dust.v(-20 + rnd() * 40, rnd() * 8.5, -12 + rnd() * 24, ICE_C, .05 + rnd() * .1, .5 + rnd() * .8);
+  // city east of the warehouse: blocks, buildings, road centre lines
+  const BX0 = 26, BLK = 18, ROAD = 6, NBX = 7, NBZ = 8, BZ0 = -72;
+  const bx = c => BX0 + c * (BLK + ROAD), bz = r => BZ0 + r * (BLK + ROAD);
+  for (let c = 0; c <= NBX; c++) city.l([bx(c) - ROAD / 2, .02, BZ0 - ROAD], [bx(c) - ROAD / 2, .02, bz(NBZ) ], DIM, .22);
+  for (let r = 0; r <= NBZ; r++) city.l([BX0 - ROAD, .02, bz(r) - ROAD / 2], [bx(NBX), .02, bz(r) - ROAD / 2], DIM, .22);
+  const DEST = { c: 4, r: 4 };
+  for (let c = 0; c < NBX; c++) for (let r = 0; r < NBZ; r++) {
+    const x0 = bx(c), z0 = bz(r), dest = c === DEST.c && r === DEST.r;
+    for (let q = 0; q < 4; q++) {
+      const w = 6 + rnd() * 2.5, d = 6 + rnd() * 2.5, h = 6 + Math.pow(rnd(), 2) * 46, ox = (q % 2) * 9 + 4.5, oz = Math.floor(q / 2) * 9 + 4.5;
+      if (dest && q === 1) continue; // the destination tower is drawn live
+      city.box(x0 + ox, 0, z0 + oz, w, h, d, ICE_C, .14 + rnd() * .14);
+      city.poly([[x0 + ox - w / 2, h, z0 + oz - d / 2], [x0 + ox + w / 2, h, z0 + oz - d / 2], [x0 + ox + w / 2, h, z0 + oz + d / 2], [x0 + ox - w / 2, h, z0 + oz + d / 2]], WHT, .22, true);
+      for (let n = 0, nw = Math.floor(h / 6); n < nw; n++) { const side = rnd() < .5 ? -1 : 1; cityPts.v(x0 + ox + side * w / 2, 2 + rnd() * (h - 3), z0 + oz + (rnd() - .5) * d, rnd() < .12 ? EMB_C : ICE_C, .25 + rnd() * .3, .8 + rnd() * .6); }
+    }
+  }
+  const DEST_P = [bx(DEST.c) + 13.5, 0, bz(DEST.r) + 4.5];
+  for (let c = 0; c <= NBX; c++) for (let z = BZ0 - ROAD; z < bz(NBZ); z += 12) cityPts.v(bx(c) - ROAD / 2 + 2.6, 4, z, WHT, .35, 1.1);
+  for (let r = 0; r <= NBZ; r++) for (let x = BX0 - ROAD; x < bx(NBX); x += 12) cityPts.v(x, 4, bz(r) - ROAD / 2 + 2.6, WHT, .35, 1.1);
+  // route: east door → avenue → along streets → destination tower
+  const ROUTE = [[20.5, 0, OUT_Z], [BX0 - ROAD / 2, 0, OUT_Z], [BX0 - ROAD / 2, 0, bz(DEST.r) - ROAD / 2], [bx(DEST.c) - ROAD / 2, 0, bz(DEST.r) - ROAD / 2], [bx(DEST.c) - ROAD / 2, 0, bz(DEST.r) + 4.5], [DEST_P[0] - 3.5, 0, DEST_P[2]]];
+  wh.upload(); city.upload(); dust.upload(); cityPts.upload();
+  const dyn = new Batch(16000, true), pts = new Batch(3000, true);
+
+  /* ---------- helpers for scene timing ---------- */
+  const seg = (s, a, b) => clamp((s - a) / (b - a), 0, 1);
+  const ease = x => x * x * (3 - 2 * x), easeOut = x => 1 - Math.pow(1 - x, 3), easeIO = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  const along = (path, t) => {               // point at fraction t of a polyline's length
+    let L = 0; const ls = []; for (let i = 0; i < path.length - 1; i++) { const d = Math.hypot(path[i + 1][0] - path[i][0], path[i + 1][1] - path[i][1], path[i + 1][2] - path[i][2]); ls.push(d); L += d; }
+    let d = clamp(t, 0, 1) * L; for (let i = 0; i < ls.length; i++) { if (d <= ls[i] || i === ls.length - 1) return V3.lerp(path[i], path[i + 1], ls[i] ? clamp(d / ls[i], 0, 1) : 0); d -= ls[i]; }
+    return path[path.length - 1];
+  };
+  const partial = (path, t, c, a, b) => { // draw the first t of a polyline, return head point
+    let L = 0; for (let i = 0; i < path.length - 1; i++) L += Math.hypot(...V3.sub(path[i + 1], path[i])); let d = clamp(t, 0, 1) * L, head = path[0];
+    for (let i = 0; i < path.length - 1 && d > 0; i++) { const sl = Math.hypot(...V3.sub(path[i + 1], path[i])), u = Math.min(1, d / sl), q = V3.lerp(path[i], path[i + 1], u); b.l(path[i], q, c, a); head = q; d -= sl; }
+    return head;
+  };
+  // a delivery scooter in wireframe, facing angle `ang` (radians around y), with the parcel on the rack
+  function scooter(b, P0, ang, c, a, parcel) {
+    const cs = Math.cos(ang), sn = Math.sin(ang), W = (x, y, z) => [P0[0] + x * cs - z * sn, P0[1] + y, P0[2] + x * sn + z * cs];
+    for (const wx of [-.55, .55]) { const ring = []; for (let n = 0; n <= 14; n++) ring.push(W(wx + Math.cos(n / 14 * 6.283) * .3, .3 + Math.sin(n / 14 * 6.283) * .3, 0)); b.poly(ring, c, a); }
+    b.poly([W(-.55, .3, 0), W(-.1, .55, 0), W(.35, .55, 0), W(.55, .3, 0)], c, a); b.l(W(.35, .55, 0), W(.45, 1.1, 0), c, a); b.l(W(.45, 1.1, -.32), W(.45, 1.1, .32), c, a);
+    b.l(W(-.25, .78, 0), W(.05, .78, 0), c, a); b.l(W(-.1, .8, 0), W(.05, 1.5, 0), c, a * .8); b.l(W(.05, 1.4, 0), W(.42, 1.1, 0), c, a * .7);
+    if (parcel) { const q = W(-.55, .72, 0); b.box(q[0], q[1], q[2], .55, .48, .55, WHT, a); }
+  }
+  const aisleX = i => rowX(i) + 1.4;                                   // aisle on the +x side of row i
+  const slotFront = (o) => [aisleX(o.i) - .2, levY(o.k) + .4, bayZ(o.j)];
+  const putawayPath = (o) => [[-9.4, CONV_Y, DOCK_Z[IN_DOCK]], [aisleX(o.i), .3, DOCK_Z[IN_DOCK]], [aisleX(o.i), .3, bayZ(o.j)], [aisleX(o.i), levY(o.k) + .4, bayZ(o.j)], [rowX(o.i), levY(o.k) + .4, bayZ(o.j)]];
+
+  /* ---------- scenes ---------- */
+  // share: fraction of the pinned scroll. cam: [eye, target] at the scene's start and end.
+  const SC = [
+    { k: 'open', share: .07, cam: [[4, 50, 36], [0, 0, -1], [-30, 15, 25], [-18, 1.5, -4]] },
+    { k: 'inbound', share: .13, cam: [[-36, 1.7, 10], [-24, 2, -4], [-27.5, 2.4, 4.5], [-19, 1.3, -4]] },
+    { k: 'inspect', share: .11, cam: [[-16.6, 1.5, 3.3], [-14.6, 1.1, -4], [-12, 1.9, 3.7], [-13.4, 1, -4]] },
+    { k: 'putaway', share: .13, cam: [[-12, 20, 13], [0, 0, -1], [5, 25, 15], [3, 0, -1]] },
+    { k: 'count', share: .17, cam: [[3, 12, 16], [2, 2, -1], [1, 4, 12.5], [-.4, 3, 0]], mid: [[.3, [1, 5, 13], [-.4, 3, 0]], [.6, [-8, 16, 18], [-9, 1, -2]]] },
+    { k: 'pick', share: .13, cam: [[0, 28, 20], [2, 0, 0], [9, 22, 17], [6, 0, -1]] },
+    { k: 'pack', share: .1, cam: [[12, 3.4, 1.5], [15.5, 1, -4], [14.6, 2.6, 10.5], [21.5, 1.1, 3.6]] },
+    { k: 'mile', share: .16, cam: [[17.5, 2.4, 7.6], [25, 1, 5], [104, 125, 126], [118, 0, 22]], mid: [[.24, [16, 9, 20], [26, 0, 14]], [.45, [48, 26, 44], [64, 0, 18]]] },
+  ];
+  let acc = 0; SC.forEach(s => { s.p0 = acc; acc += s.share; s.p1 = acc; });
+  // camera keys inside every scene (start, optional mids, end), Catmull-Rom between all of them
+  const KEYS = []; SC.forEach((s, i) => {
+    KEYS.push({ p: s.p0 + (i ? s.share * .1 : 0), e: s.cam[0], t: s.cam[1] });
+    (s.mid || []).forEach(([u, e, t]) => KEYS.push({ p: s.p0 + s.share * u, e, t }));
+    KEYS.push({ p: s.p1 - s.share * .1, e: s.cam[2], t: s.cam[3] });
+  });
+  const cr = (p0, p1, p2, p3, t) => { const t2 = t * t, t3 = t2 * t; return p1.map((_, i) => .5 * (2 * p1[i] + (-p0[i] + p2[i]) * t + (2 * p0[i] - 5 * p1[i] + 4 * p2[i] - p3[i]) * t2 + (-p0[i] + 3 * p1[i] - 3 * p2[i] + p3[i]) * t3)); };
+  function camAt(p) {
+    if (p <= KEYS[0].p) return [KEYS[0].e, KEYS[0].t];
+    for (let i = 0; i < KEYS.length - 1; i++) if (p <= KEYS[i + 1].p) {
+      const u = ease((p - KEYS[i].p) / (KEYS[i + 1].p - KEYS[i].p)), a = KEYS[Math.max(0, i - 1)], b = KEYS[i], c = KEYS[i + 1], d = KEYS[Math.min(KEYS.length - 1, i + 2)];
+      return [cr(a.e, b.e, c.e, d.e, u), cr(a.t, b.t, c.t, d.t, u)];
+    }
+    const L = KEYS[KEYS.length - 1]; return [L.e, L.t];
+  }
+
+  /* ---------- DOM ---------- */
+  const stage = $('.flow-stage'), capT = $('#fcT'), capS = $('#fcS'), capK = $('#fcK'), tc = $('#ftc'), scn = $('#fscn'), hudEl = $('#fhud'), rail = $('#frail i'), bars = $$('.flow-bar');
+  const CAPS = FLOW_CAPS;
+  const labels = [];
+  function label(text, cls) { const el = document.createElement('div'); el.className = 'flab mono ' + (cls || ''); $('#flabs').appendChild(el); const o = { el, on: 0, want: 0, t: null, w: 0, h: 0, flip: false }; setText(o, text); labels.push(o); return o; }
+  function setText(o, t) { if (o.t !== t) { o.el.textContent = t; o.t = t; o.w = 0; } }
+  const L_DOCK = label('DOCK 02 · 입고'), L_ARCH = label('검수 게이트'), L_LOST = label('', 'warn'), L_MIS = label('', 'ok'), L_PACK = label('패킹 스테이션'), L_OUT = label('출고 · OUT 01'), L_DEST = label('', 'ok'), L_SKU = label(''), L_RIDER = label('라이더');
+  const L_TRACE = [label('', 'trace'), label('', 'trace'), label('', 'trace')];
+  const L_PICK = PICKS.map((o, n) => label(code(o.i, o.j, o.k) + ' · 피킹 ' + (n + 1) + '/3'));
+  // place() only records where a label wants to be; flushLabels() lays them out together
+  let safeTop = 0, safeBot = 0;
+  function place(o, pos, a, VP) {
+    o.want = 0;
+    if (a < .02) return;
+    const c = [0, 1, 2, 3].map(r => VP[r] * pos[0] + VP[4 + r] * pos[1] + VP[8 + r] * pos[2] + VP[12 + r]);
+    if (c[3] <= .1) return;
+    const x = (c[0] / c[3] * .5 + .5) * innerWidth, y = (1 - (c[1] / c[3] * .5 + .5)) * innerHeight;
+    if (x < 0 || x > innerWidth || y < safeTop - 30 || y > innerHeight - safeBot) return;   // anchor is out of frame
+    o.want = a; o.x = x; o.y = y;
+  }
+  function flushLabels() {
+    const Wd = innerWidth, g = 12, railW = isMob() ? 34 : 60, done = [];
+    labels.filter(o => o.want).sort((a, b) => a.y - b.y).forEach(o => {
+      if (!o.w) { o.w = o.el.offsetWidth; o.h = o.el.offsetHeight; }
+      const flip = o.x + 6 + o.w > Wd - railW - g;
+      if (flip !== o.flip) { o.flip = flip; o.el.classList.toggle('flip', flip); }
+      let x0 = flip ? Math.max(g, o.x - 6 - o.w) : o.x + 6, y0 = Math.max(safeTop + 8, o.y - 12);
+      for (const r of done) if (x0 < r.x1 && x0 + o.w > r.x0 && y0 < r.y1 && y0 + o.h > r.y0) y0 = r.y1 + 4;
+      done.push({ x0, x1: x0 + o.w, y0, y1: y0 + o.h });
+      const tx = flip ? x0 + 6 : x0 - 6, ty = y0 + 12;
+      o.el.style.transform = `translate3d(${tx.toFixed(1)}px,${ty.toFixed(1)}px,0)`; o.el.style.opacity = o.want.toFixed(2); o.on = 1;
+    });
+    labels.forEach(o => { if (!o.want && o.on) { o.el.style.opacity = 0; o.on = 0; } });
+  }
+  $$('#frail button').forEach((b, n) => b.addEventListener('click', () => {
+    const top = sec.offsetTop, len = sec.offsetHeight - innerHeight; scrollTo({ top: top + len * (SC[n].p0 + SC[n].share * .35), behavior: RM ? 'auto' : 'smooth' });
+  }));
+
+  let lastScene = -1, P = 0, vis = 0, chrome = 0, chromeS = '';
+  const frail = $('#frail');
+  // in-scene wall clock per scene (minutes): the order lands 18:12 and is delivered 18:41
+  const TIMES = [[800, 811], [811, 826], [826, 838], [838, 852], [1000, 1018], [1092, 1099], [1099, 1104], [1104, 1121]];
+  const minAt = (si, s) => lerp(TIMES[si][0], TIMES[si][1], s);
+  const hhmm = m => [Math.floor(m / 60), Math.floor(m % 60)].map(v => String(v).padStart(2, '0')).join(':');
+  const clock = (si, s) => { const m = minAt(si, s); return hhmm(m) + ':' + String(Math.floor((m * 60) % 60)).padStart(2, '0'); };
+  const ORDER_MIN = TIMES[5][0], ARRIVE_MIN = minAt(7, .9);
+
+  function update(dt) {
+    const r = sec.getBoundingClientRect(), H = innerHeight, len = sec.offsetHeight - H;
+    const raw = -r.top / Math.max(1, len);
+    const target = clamp(raw, 0, 1);
+    P = RM ? target : lerp(P, target, 1 - Math.pow(.002, dt));
+    vis = smooth(-.06, .0, raw) * (1 - smooth(1, 1.06, raw));
+    if (r.bottom < -H * .2 || r.top > H * 1.2) vis = 0;
+    chrome = smooth(0, .015, raw) * (1 - smooth(.985, 1, raw));
+    // letterbox: 2.39:1 on wide screens, thin bars on phones
+    const bh = chrome * (isMob() ? H * .06 : clamp((H - innerWidth / 2.39) / 2, H * .07, H * .13));
+    const cs = chrome.toFixed(3) + '|' + bh.toFixed(1);
+    if (cs !== chromeS) {
+      chromeS = cs; stage.style.setProperty('--vis', chrome.toFixed(3));
+      bars.forEach(b => b.style.height = bh.toFixed(1) + 'px');
+      frail.inert = chrome < .5;
+    }
+    safeTop = Math.max(bh, (isMob() ? 66 : 74) + 26); safeBot = bh + 8;
+    return vis;
+  }
+
+  function draw(T, mx, my) {
+    if (vis < .003) { labels.forEach(o => { if (o.on) { o.el.style.opacity = 0; o.on = 0; } }); return; }
+    const p = P, si = SC.findIndex(s => p <= s.p1 + 1e-6), S = SC[Math.max(0, si)], sIdx = Math.max(0, si), s = seg(p, S.p0, S.p1);
+    // camera
+    let [eye, tgt] = camAt(p);
+    const hand = RM ? 0 : 1;
+    eye = [eye[0] + (mx - .5) * 1.2 + Math.sin(T * .7) * .06 * hand, eye[1] - (my - .5) * .6 + Math.sin(T * .53 + 1) * .05 * hand, eye[2] + Math.cos(T * .61) * .06 * hand];
+    const asp = innerWidth / innerHeight, portrait = asp < 1, fov = (portrait ? 66 : 42) * Math.PI / 180;
+    // phones: dolly back so the subject fits a narrow frame; lens shift lifts it above the caption
+    if (portrait) eye = V3.lerp(tgt, eye, lerp(1.25, 1.7, clamp((1 - asp) * 2, 0, 1)));
+    const PR = M4.persp(fov, asp, .1, 600); PR[9] = portrait ? -.3 : -.1;
+    const VP = M4.mul(PR, M4.look(eye, tgt, [0, 1, 0]));
+    // ---------- dynamic geometry ----------
+    dyn.n = 0; pts.n = 0;
+    const sAt = k => { const sc = SC.find(x => x.k === k); return seg(p, sc.p0, sc.p1); };
+    const sIn = sAt('inbound'), sIns = sAt('inspect'), sPut = sAt('putaway'), sCnt = sAt('count'), sPick = sAt('pick'), sPack = sAt('pack'), sMile = sAt('mile');
+    const dz = DOCK_Z[IN_DOCK];
+    // truck backs in and leaves later
+    const truckX = lerp(-58, -26.6, easeOut(seg(sIn, 0, .42))) - easeIO(seg(sIns, .6, 1)) * 30;
+    if (truckX > -70) { dyn.box(truckX, .9, dz, 12, 2.7, 2.5, ICE_C, .55); dyn.box(truckX - 7.6, .9, dz, 2.6, 2.9, 2.4, ICE_C, .45); for (const w of [-4, 3.6]) { dyn.box(truckX + w, 0, dz - 1.15, .9, .9, .25, DIM, .5); dyn.box(truckX + w, 0, dz + 1.15, .9, .9, .25, DIM, .5); } }
+    if (truckX > -70) { pts.v(truckX - 8.9, 1.5, dz - .9, WHT, .9, 6); pts.v(truckX - 8.9, 1.5, dz + .9, WHT, .9, 6); const blink = sIn < .45 && Math.sin(T * 9) > 0 ? 1 : .15; pts.v(truckX + 6.05, 3.4, dz - 1.1, EMB_C, .9 * blink, 4); pts.v(truckX + 6.05, 3.4, dz + 1.1, EMB_C, .9 * blink, 4); }
+    // dock door opens, light spills in
+    const door = easeIO(seg(sIn, .34, .5)) * (1 - seg(sPut, 0, .2));
+    if (door > 0) for (let n = 0; n <= 16; n++) { const u = n / 16; dyn.l([-20, 3.5, dz - 1.4 + 2.8 * u], [-12.5 + (n % 3), 0, dz - 2.4 + 4.8 * u], WHT, .07 * door, 0); }
+    for (let n = 0; n < 7; n++) { const y = lerp(0, 3.6, door) + n * (3.6 - lerp(0, 3.6, door)) / 7; dyn.l([-20, y, dz - 1.5], [-20, y, dz + 1.5], ICE_C, .25 * (1 - door * .7)); }
+    // inbound parcels: 24 boxes ride the conveyor, get scanned, then the putaway sends them into racks
+    const lostOn = seg(sCnt, .3, .36) * (1 - seg(sCnt, .86, .94)), traceT = seg(sCnt, .42, .7), found = seg(sCnt, .7, .78), fixT = easeIO(seg(sCnt, .8, .95));
+    const NB = isMob() ? 14 : 24, dests = [];
+    for (let n = 0; n < NB; n++) { const i = n % ROWS, j = (n * 3) % BAYS, k = (n * 5) % LEVS; dests.push(n === 7 ? MIS : (i === LOST.i && j === LOST.j ? { i, j: (j + 2) % BAYS, k } : { i, j, k })); }
+    let scanned = 0, put = 0;
+    for (let n = 0; n < NB; n++) {
+      const t0 = .45 + n * .022, onBelt = seg(sIn, t0, t0 + .32) * .55 + seg(sIns, n * .028, n * .028 + .36) * .45;
+      if (sIn < t0) continue;
+      const putT = seg(sPut, .06 + n * .025, .06 + n * .025 + .32);
+      let pos, a = .85, col = ICE_C;
+      if (putT <= 0) { pos = along(IN_PATH, onBelt); pos = [pos[0], pos[1] + .02, pos[2]]; }
+      else pos = along(putawayPath(dests[n]), easeIO(putT));
+      const passed = pos[0] > ARCH_X; if (passed && putT <= 0) { scanned++; col = WHT; }
+      const isMis = n === 7;
+      if (putT >= 1) { a = .0; } // now drawn as part of the rack contents
+      const assign = seg(sPut, .02 + n * .025, .1 + n * .025) * (1 - seg(putT, .7, 1));
+      if (assign > 0) { const d = isMis ? LOST : dests[n], sp = slot(d.i, d.j, d.k); dyn.box(sp[0], sp[1] + .02, sp[2], .96, 1, 1.7, GRN, .55 * assign); for (let c2 = 0; c2 < 4; c2++) dyn.l([sp[0] + (c2 % 2 - .5) * .9, sp[1] + 1, sp[2] + (c2 > 1 ? .8 : -.8)], [sp[0] + (c2 % 2 - .5) * .9, 9, sp[2] + (c2 > 1 ? .8 : -.8)], GRN, .3 * assign, 0); }
+      if (a > 0) { dyn.box(pos[0], pos[1], pos[2], .8, .6, .9, col, a); pts.v(pos[0], pos[1] + .3, pos[2], col, .5, 1.6); }
+      if (putT > 0 && putT < 1) { partial(putawayPath(dests[n]), easeIO(putT), ICE_C, .22, dyn); for (let g = 1; g <= 3; g++) { const q = along(putawayPath(dests[n]), easeIO(Math.max(0, putT - g * .035))); dyn.box(q[0], q[1], q[2], .8, .6, .9, ICE_C, a * [0, .3, .17, .08][g]); } }
+      if (putT >= 1) { put++; const d = dests[n], isM = n === 7; if (isM ? found <= 0 : sCnt < .55) dyn.box(rowX(d.i), levY(d.k) + .02, bayZ(d.j), .86, .9, 1.55, isM && sCnt > 0 ? ICE_C : WHT, (isM && sCnt > 0 ? .4 : .55) * (1 - seg(sPut, .9, 1) * .6)); }
+    }
+    // scan curtain at the inspection arch
+    const curtain = seg(sIns, 0, .06) * (1 - seg(sIns, .92, 1));
+    if (curtain > 0) for (let n = 0; n < 14; n++) { const y = .1 + n * .17, f = .4 + .6 * Math.abs(Math.sin(T * 3 + n)); dyn.l([ARCH_X, y, dz - 1.05], [ARCH_X, y, dz + 1.05], GRN, .28 * curtain * f); }
+    // cycle count sweep + loss trace
+    const sweep = seg(sCnt, .02, .4), sweepZ = lerp(bayZ(0) - 1.1, bayZ(BAYS - 1) + 1.1, sweep), cx0 = rowX(LOST.i) - 1, cx1 = rowX(LOST.i) + 1;
+    if (sCnt > 0 && sCnt < .45) { dyn.poly([[cx0, 0, sweepZ], [cx0, 6.2, sweepZ], [cx1, 6.2, sweepZ], [cx1, 0, sweepZ]], GRN, .55, true); for (let y = 0; y < 6.2; y += .62) dyn.l([cx0, y, sweepZ], [cx1, y, sweepZ], GRN, .12); }
+    const pulse = .5 + .5 * Math.sin(T * 6);
+    if (lostOn > 0) { const sp = slot(LOST.i, LOST.j, LOST.k); dyn.box(sp[0], sp[1] + .02, sp[2], .96, .96, 1.7, EMB_C, (.5 + .4 * pulse) * lostOn); pts.v(sp[0] + .7, sp[1] + .45, sp[2], EMB_C, .9 * lostOn, 5);
+      const hold = lostOn * (1 - seg(sCnt, .8, .9)); for (let n = 0; n < 7; n++) { const z = sp[2] - .85 + n * .283; dyn.l([sp[0] + .5, sp[1], z], [sp[0] + .5, sp[1] + 1, z], EMB_C, .35 * hold); } }
+    const tracePath = putawayPath(LOST).slice().reverse().concat([[ARCH_X, CONV_Y, dz], [-19.6, CONV_Y, dz]]);
+    if (traceT > 0 && sCnt < .96) { const head = partial(tracePath, easeIO(traceT), EMB_C, .8 * (1 - seg(sCnt, .9, .96)), dyn); pts.v(head[0], head[1], head[2], EMB_C, .9, 4); }
+    if (found > 0) { const sp = slot(MIS.i, MIS.j, MIS.k), to = slot(LOST.i, LOST.j, LOST.k), q = V3.lerp(sp, to, fixT); dyn.box(q[0] + Math.sin(fixT * Math.PI) * .9, q[1] + .02, q[2], .86, .82, 1.55, fixT >= 1 ? GRN : WHT, .8 * found * (1 - seg(sPick, .1, .3) * .7)); }
+    // order → pick path through the aisles
+    const pickStart = [aisleX(0) - 2.8 - .1, .25, 8.6];
+    const pickPath = [pickStart]; PICKS.forEach(o => { const last = pickPath[pickPath.length - 1]; pickPath.push([last[0], .25, 8.4], [aisleX(o.i), .25, 8.4], [aisleX(o.i), .25, bayZ(o.j)]); });
+    pickPath.push([aisleX(PICKS[2].i), .25, -9.6], [13, .25, -9.6], [14.2, .25, -4]);
+    const orderDrop = easeOut(seg(sPick, 0, .14));
+    if (sPick > 0 && sPick < 1) { for (let n = 0; n < 3; n++) { const y = lerp(30, 2 + n * .4, orderDrop); pts.v(pickStart[0] + n * .5, y, pickStart[2], WHT, .8 * (1 - seg(sPick, .2, .3)), 3); } }
+    const walk = seg(sPick, .16, .96);
+    if (walk > 0 && sPack < .3) { const head = partial(pickPath, walk, WHT, .7 * (1 - seg(sPack, 0, .3)), dyn); pts.v(head[0], head[1] + .2, head[2], WHT, 1, 5); dyn.box(head[0], .2, head[2], .7, .45, .5, WHT, .7); }
+    PICKS.forEach((o, n) => { const reach = seg(walk, (n + 1) / 4 - .06, (n + 1) / 4 + .04); if (reach > 0 && sPack < .2) { const sp = slot(o.i, o.j, o.k); dyn.box(sp[0], sp[1] + .02, sp[2], .9, .9, 1.6, n === 2 ? GRN : WHT, .7 * (1 - reach * .5)); } });
+    // pack: three items converge, box closes, label, rides to the east door, rider leaves
+    const conv = easeIO(seg(sPack, .0, .3)), close = easeIO(seg(sPack, .28, .45)), ride = easeIO(seg(sPack, .48, .95));
+    if (sPack > 0 && sMile < .2) {
+      if (ride <= 0) { for (let n = 0; n < 3; n++) { const st = [PACK[0] - 1 + n, PACK[1] + .6, PACK[2] + 1.2], q = V3.lerp(st, [PACK[0], PACK[1] + .15, PACK[2]], conv); dyn.box(q[0], q[1], q[2], .32, .3, .3, WHT, .8); }
+        dyn.box(PACK[0], PACK[1], PACK[2], 1, .62, .8, WHT, .75);
+        const lid = (1 - close) * 1.2; dyn.l([PACK[0] - .5, PACK[1] + .62, PACK[2] - .4], [PACK[0] - .5, PACK[1] + .62 + lid * .6, PACK[2] - .4 - lid * .3], WHT, .7); dyn.l([PACK[0] + .5, PACK[1] + .62, PACK[2] - .4], [PACK[0] + .5, PACK[1] + .62 + lid * .6, PACK[2] - .4 - lid * .3], WHT, .7);
+        if (close >= 1) dyn.poly([[PACK[0] - .2, PACK[1] + .63, PACK[2] - .15], [PACK[0] + .25, PACK[1] + .63, PACK[2] - .15], [PACK[0] + .25, PACK[1] + .63, PACK[2] + .15], [PACK[0] - .2, PACK[1] + .63, PACK[2] + .15]], EMB_C, .9, true);
+      } else { if (ride < 1) { const q = along([[PACK[0], PACK[1], PACK[2]], [16.8, CONV_Y, -2.4]].concat(OUT_PATH.slice(1)).concat([[23.05, .72, OUT_Z]]), ride); dyn.box(q[0], q[1], q[2], 1, .62, .8, WHT, .85); pts.v(q[0], q[1] + .4, q[2], EMB_C, .8, 3); } }
+      if (sMile <= 0) { scooter(dyn, [23.6, 0, OUT_Z], 0, ICE_C, .75, ride >= 1); pts.v(24.3, 1, OUT_Z, WHT, .8 * seg(sPack, .3, .6), 7); }
+      for (let n = 0; n < 7; n++) { const od = easeIO(seg(sPack, .6, .75)) * (1 - seg(sMile, .1, .3)); const y = lerp(0, 3.6, od) + n * (3.6 - lerp(0, 3.6, od)) / 7; dyn.l([20, y, OUT_Z - 1.5], [20, y, OUT_Z + 1.5], ICE_C, .25 * (1 - od * .7)); }
+    }
+    const odoor = easeIO(seg(sPack, .6, .75)) * (1 - seg(sMile, .15, .35));
+    if (odoor > 0) for (let n = 0; n <= 16; n++) { const u = n / 16; dyn.l([20, 3.5, OUT_Z - 1.4 + 2.8 * u], [26 + (n % 3), 0, OUT_Z - 2.6 + 5.2 * u], WHT, .07 * odoor, 0); }
+    // last mile: route draws itself, the rider runs it, the destination tower lights up
+    const cityA = smooth(.0, .25, sMile) + seg(sPack, .7, 1) * .3;
+    const routeT = ease(seg(sMile, .06, .82)), arrive = seg(sMile, .8, .9);
+    if (sMile > 0) {
+      const head = partial(ROUTE, routeT, EMB_C, .95, dyn); partial(ROUTE, 1, EMB_C, .12, dyn);
+      pts.v(head[0], 1.2, head[2], EMB_C, 1, 9); pts.v(head[0], 1.2, head[2], WHT, .9, 3);
+      { const q2 = along(ROUTE, Math.min(1, routeT + .002)), ang = Math.atan2(q2[2] - head[2], q2[0] - head[0]) || 0; if (arrive < 1) scooter(dyn, [head[0], 0, head[2]], ang, EMB_C, .8, true); }
+      for (let g = 1; g <= 12; g++) { const q = along(ROUTE, routeT - g * .005); pts.v(q[0], 1.2, q[2], EMB_C, .6 * (1 - g / 13), 6 - g * .35); }
+      for (let n = 0; n < 18; n++) { const horiz = n % 2, lane = (n * 5) % (horiz ? NBZ : NBX), u = ((T * (.012 + (n % 5) * .003) + n * .37) % 1);
+        const q = horiz ? [lerp(BX0 - ROAD, bx(NBX), u), 1, bz(lane) - ROAD / 2 + (n % 3 - 1)] : [bx(lane) - ROAD / 2 + (n % 3 - 1), 1, lerp(BZ0 - ROAD, bz(NBZ), u)]; pts.v(q[0], q[1], q[2], n % 4 ? ICE_C : EMB_C, .5, 3); }
+      const tower = 34 * easeOut(arrive) + 8;
+      dyn.box(DEST_P[0], 0, DEST_P[2], 7.5, tower, 7.5, arrive > 0 ? GRN : ICE_C, .3 + arrive * .6);
+      if (arrive > 0) for (let n = 0; n < 3; n++) { const rr = ((T * .8 + n / 3) % 1) * 14; const ring = []; for (let a = 0; a <= 24; a++) ring.push([DEST_P[0] + Math.cos(a / 24 * 6.283) * rr, .1, DEST_P[2] + Math.sin(a / 24 * 6.283) * rr]); dyn.poly(ring, GRN, .5 * (1 - rr / 14) * arrive); }
+    }
+    // ambient: chevrons running on both conveyors
+    if (!RM) for (const path of [IN_PATH, OUT_PATH]) for (let n = 0; n < 12; n++) { const q = along(path, ((T * .08 + n / 12) % 1)); pts.v(q[0], q[1] + .03, q[2], ICE_C, .25, 1.2); }
+    dyn.upload(); pts.upload();
+
+    // ---------- draw ----------
+    const usePost = ensurePost();
+    if (usePost) { gl.bindFramebuffer(gl.FRAMEBUFFER, post.S.f); gl.viewport(0, 0, post.S.w, post.S.h); gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT); }
+    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    gl.useProgram(fp);
+    gl.uniformMatrix4fv(FU.uVP, false, new Float32Array(VP)); gl.uniform3f(FU.uEye, eye[0], eye[1], eye[2]);
+    gl.uniform1f(FU.uPix, canvas.width / innerWidth); gl.uniform1f(FU.uFog, sMile > 0 ? .005 : .026);
+    gl.uniform1f(FU.uFocus, Math.hypot(...V3.sub(eye, tgt))); gl.uniform1f(FU.uDof, sMile > .3 ? .4 : 1.1);
+    const whA = vis * (1 - smooth(.55, 1, sMile) * .5);
+    const build = RM ? 1 : lerp(.1, 1, ease(seg(p, 0, SC[0].p1 * .85)));
+    const layer = mirror => {
+      gl.uniform1f(FU.uMirror, mirror);
+      gl.uniform1f(FU.uPt, 0); gl.uniform1f(FU.uFade, whA); gl.uniform1f(FU.uBuild, build); wh.draw(gl.LINES); gl.uniform1f(FU.uBuild, 1);
+      if (!mirror) { gl.uniform1f(FU.uFade, vis * cityA); city.draw(gl.LINES); }
+      gl.uniform1f(FU.uFade, vis); dyn.draw(gl.LINES);
+      gl.uniform1f(FU.uPt, 1);
+      if (!mirror) { gl.uniform1f(FU.uFade, whA * build); dust.draw(gl.POINTS); gl.uniform1f(FU.uFade, vis * cityA); cityPts.draw(gl.POINTS); }
+      gl.uniform1f(FU.uFade, vis); pts.draw(gl.POINTS);
+    };
+    if (sMile < .35) layer(1);
+    layer(0);
+    if (usePost) {
+      gl.disable(gl.BLEND);
+      pass(PDOWN, post.A, u => { tex(0, post.S.t); gl.uniform1i(u.t, 0); gl.uniform2f(u.px, 1 / post.S.w, 1 / post.S.h); });
+      for (let it = 0; it < 2; it++) {
+        pass(PBLUR, post.B, u => { tex(0, post.A.t); gl.uniform1i(u.t, 0); gl.uniform2f(u.d, (1 + it * 1.5) / post.A.w, 0); });
+        pass(PBLUR, post.A, u => { tex(0, post.B.t); gl.uniform1i(u.t, 0); gl.uniform2f(u.d, 0, (1 + it * 1.5) / post.A.h); });
+      }
+      gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+      pass(PCOMP, null, u => { tex(0, post.S.t); tex(1, post.A.t); gl.uniform1i(u.s, 0); gl.uniform1i(u.b, 1); gl.uniform1f(u.k, isMob() ? 1.7 : 2.4); gl.uniform1f(u.ca, .022); gl.uniform1f(u.f, vis); });
+      gl.activeTexture(gl.TEXTURE0);
+    }
+
+    // ---------- DOM: captions, HUD, labels ----------
+    if (sIdx !== lastScene) {
+      lastScene = sIdx; const c = CAPS[sIdx];
+      stage.classList.remove('swap'); void stage.offsetWidth; stage.classList.add('swap');
+      capK.textContent = c.k; capT.textContent = c.t; capS.textContent = c.s;
+      scn.textContent = sIdx ? `SCENE ${String(sIdx).padStart(2, '0')} / ${String(SC.length - 1).padStart(2, '0')} · ${c.en}` : `PROLOGUE · ${c.en}`;
+      $$('#frail button').forEach((b, n) => { b.classList.toggle('on', n === sIdx); if (n === sIdx) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current'); });
+    }
+    rail.style.transform = `scaleY(${p.toFixed(4)})`;
+    tc.textContent = 'TC ' + clock(sIdx, s);
+    const picked = PICKS.filter((o, n) => walk >= (n + 1) / 4 + .04).length;
+    const nowMin = minAt(sIdx, s), eta = Math.max(0, Math.round(ARRIVE_MIN - nowMin)), since = Math.round(Math.min(nowMin, ARRIVE_MIN) - ORDER_MIN);
+    const hudLines = CAPS[sIdx].hud(s, { scanned, NB, put, picked, routeT, arrive, eta, since });
+    if (hudEl._t !== hudLines.join('|')) { hudEl.innerHTML = hudLines.map(l => `<span>${l}</span>`).join(''); hudEl._t = hudLines.join('|'); }
+    const la = (a, b, x) => smooth(a, a + .05, x) * (1 - smooth(b - .05, b, x)), cv = chrome;
+    place(L_DOCK, [-20, 4.3, dz], cv * la(.0, .9, sIn), VP);
+    place(L_ARCH, [ARCH_X, 2.9, dz], cv * la(.0, .95, sIns), VP);
+    setText(L_SKU, `SKU 880${String(1200 + scanned * 37).padStart(5, '0')} · 수량 OK · 유통기한 26.11.03`);
+    place(L_SKU, [ARCH_X + .6, 1.8, dz + 1.3], cv * la(.15, .9, sIns), VP);
+    setText(L_LOST, `${code(LOST.i, LOST.j, LOST.k)} · 전산 12 / 실물 11 · 차이 −1`);
+    place(L_LOST, [rowX(LOST.i) + .7, levY(LOST.k) + 1.1, bayZ(LOST.j)], cv * la(.32, .8, sCnt), VP);
+    const tr = [['13:31 입고 · DOCK 02', [-19.6, 1.6, dz]], ['13:48 검수 · OK', [ARCH_X, 1.7, dz]], ['14:02 적치 확정 · ' + code(LOST.i, LOST.j, LOST.k), slot(LOST.i, LOST.j, LOST.k)]];
+    tr.forEach(([t, pos], n) => { setText(L_TRACE[n], t); place(L_TRACE[n], [pos[0], pos[1] + .9, pos[2]], cv * la(.44 + (2 - n) * .08, .92, sCnt), VP); });
+    setText(L_MIS, fixT >= 1 ? `${code(LOST.i, LOST.j, LOST.k)} · 재배치 완료 · 정합성 복구` : `발견 · ${code(MIS.i, MIS.j, MIS.k)} (지시 ${code(LOST.i, LOST.j, LOST.k)} · 한 단 위 적치)`);
+    const mp = fixT >= 1 ? slot(LOST.i, LOST.j, LOST.k) : slot(MIS.i, MIS.j, MIS.k);
+    place(L_MIS, [mp[0] - .7, mp[1] + 1.25, mp[2]], cv * la(.72, 1, sCnt), VP);
+    PICKS.forEach((o, n) => { const sp = slot(o.i, o.j, o.k); place(L_PICK[n], [sp[0], sp[1] + 1.15, sp[2]], cv * la(.12 + n * .05, .99, sPick) * smooth((n + 1) / 4 - .2, (n + 1) / 4 - .05, walk + .2), VP); });
+    place(L_PACK, [PACK[0], 2.2, PACK[2] - 1.2], cv * la(.0, .55, sPack), VP);
+    place(L_OUT, [20, 4.3, OUT_Z], cv * la(.45, 1, sPack), VP);
+    const rh = along(ROUTE, routeT);
+    place(L_RIDER, [rh[0], 3.5, rh[2]], cv * la(.08, .84, sMile), VP);
+    setText(L_DEST, arrive >= 1 ? '배송 완료 · ' + hhmm(ARRIVE_MIN) : '도착지');
+    place(L_DEST, [DEST_P[0], 34 * easeOut(arrive) + 12, DEST_P[2]], cv * la(.3, 1.02, sMile), VP);
+    flushLabels();
+  }
+  return { update, draw, get vis() { return vis; } };
+})();
+if (!FLOW) $('#flow')?.classList.add('static');
+
+///FLOW-JS
+/* ================= star birth ================= */
+// 100% gravity over the DANNY formation crushes the word into a singularity; it ignites into a star.
+// timeline t (s): 0-.68 crush, ~.68 ignition flash + shock, then the star swells and cools to G2V.
+const IGN = 3.4, BURST = .68, TSUN = 5772;
+const sun = { state: 'none', t: 0, fade: 0, sx: 0, sy: 0, fx: .5, fy: .5, burst: false, mix: 0 };
+const sunPtr = { x: 0, y: 0 };   // eased pointer for the sun shader, so a lifted touch never snaps the corona
+const starEl = $('#star'), stcEl = $('#star .stc'), cineEl = $('#cine'), cineS = $('#cineS'), cineT = $('#cineT'), reviveBtn = $('#revive'), gHint = $('#gHint'), gHintT = $('#gHintT');
+const stT = $('#stT'), stC = $('#stC'), stR = $('#stR');
+const HINT0 = '길게 누르면 중력이 생기고, 100%가 되면 별이 태어납니다';
+const setTxt = (el, v) => { if (el.textContent !== v) el.textContent = v; };
+// main-sequence subclasses by effective temperature (nearest entry)
+const SPEC = [['O9', 33000], ['B0', 31400], ['B1', 26000], ['B2', 20600], ['B3', 17000], ['B5', 15700], ['B8', 12500], ['A0', 9700], ['A5', 8100], ['F0', 7200], ['F5', 6440], ['G0', 5920], ['G2', 5770], ['G5', 5660], ['K0', 5280]];
+function spectral(T) { let b = SPEC[0]; for (const e of SPEC) if (Math.abs(e[1] - T) < Math.abs(b[1] - T)) b = e; return b[0]; }
+function sunTarget() { return [W * .5, H * (mobile ? .33 : .37)]; }
+function sunRadiusPx() { return mobile ? Math.min(H * .27, W * .4) : Math.min(H * .3, W * .26); }
+// same damped spring the sun shader draws the disc with (overshoot ~6%, then settles), so the
+// particle occluder and the R readout track the visible limb
+const swell = ign => { const x = clamp((ign - .2) / .8, 0, 1); return Math.max(.01, 1 - Math.exp(-6.5 * x) * (Math.cos(7.5 * x) + .62 * Math.sin(7.5 * x))); };
+let cineTimer = 0;
+function cineOff() { cineEl.classList.remove('on'); document.body.classList.remove('cine-on'); }
+function cine(small, big, ms) {
+  cineS.textContent = small; cineT.textContent = big;
+  // below the settled star's limb on wide screens; phones dim the hero copy instead (CSS)
+  cineEl.style.setProperty('--cy', Math.round(Math.max(H * .64, sunTarget()[1] + sunRadiusPx() + 22)) + 'px');
+  cineEl.classList.add('on'); document.body.classList.add('cine-on');
+  clearTimeout(cineTimer); if (ms) cineTimer = setTimeout(cineOff, ms);
+}
+function igniteStar() {
+  sun.state = 'critical'; sun.t = 0; sun.burst = false; sun.fade = 1;
+  // remembered as fractions of the viewport, in scroll-compensated space, so a resize or the
+  // hero's parallax never moves the singularity away from the finger
+  sun.fx = mouse.x / W; sun.fy = (mouse.y + Math.min(scrollY, H) * .35) / H;
+  sun.sx = mouse.x; sun.sy = mouse.y;
+  sunPtr.x = sun.sx + sunRadiusPx() * 1.4; sunPtr.y = sun.sy - sunRadiusPx() * .8;
+  hud.classList.remove('on');
+  document.body.classList.add('sun-on');
+  cine('GRAVITY 100% · CRITICAL', '임계점을 넘었습니다');
+}
+function burstStar() {
+  sun.burst = true; sun.state = 'born';
+  hold.on = false; clearTimeout(hold.timer); hold.timer = 0; hold.id = null; hud.classList.remove('on'); noSelect(false);
+  shockT = 0; shockA = RM ? .7 : 2.4; shockPt = holdPt.slice();
+  const wo = $('#whiteout'); wo.style.setProperty('--wx', (sun.sx / W * 100) + '%'); wo.style.setProperty('--wy', (sun.sy / H * 100) + '%');
+  wo.classList.remove('go'); void wo.offsetWidth; wo.classList.add('go');
+  document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake');
+  setTimeout(() => document.body.classList.remove('shake'), 1000);
+  cine('IGNITION · 핵융합 점화', '새로운 별이 태어났습니다', 4200);
+  setTimeout(() => { if (sun.state === 'born') { starLayout(); starEl.classList.add('on'); reviveBtn.hidden = false; gHintT.textContent = '별이 태어났습니다 · 스크롤하면 별은 뒤에 남습니다'; } }, 1400);
+}
+function resetStar() {
+  sun.state = 'none'; sun.t = 0; sun.fade = 0; sun.burst = false;
+  document.body.classList.remove('sun-on'); gHintT.textContent = HINT0;
+}
+// scrolled away during the critical window: no flash over another section, the hold just releases
+function abortStar() {
+  resetStar(); cineOff(); hold.on = false; hud.classList.remove('on');
+  shockT = 0; shockA = RM ? .2 : .6; shockPt = holdPt.slice();
+}
+function collapseStar() {
+  if (sun.state !== 'born') return;
+  if (document.activeElement === reviveBtn) gHint.focus({ preventScroll: true });
+  sun.state = 'dying'; sun.t = Math.min(sun.t, IGN + 3);
+  starEl.classList.remove('on'); reviveBtn.hidden = true;
+  cine('COLLAPSE · 별의 수축', '다시 DANNY로 돌아갑니다', 2600);
+}
+reviveBtn.addEventListener('click', collapseStar);
+function stepStar(dt, local) {
+  if (sun.state === 'none') return;
+  if (sun.state === 'critical' && M > .3) { abortStar(); return; }
+  if (sun.state === 'critical' || sun.state === 'born') sun.t += dt;
+  if (sun.state === 'dying') { sun.t -= dt * 2.2; if (sun.t <= 0) { resetStar(); shockT = 0; shockA = RM ? .2 : .6; shockPt = holdPt.slice(); return; } }
+  const [tx, ty] = sunTarget(), k = smooth(.9, 3.6, sun.t);
+  sun.sx = lerp(sun.fx * W, tx, k); sun.sy = lerp(sun.fy * H, ty, k) - Math.min(scrollY, H) * .35;
+  if (sun.state === 'critical') { hold.v = 1; holdPt = toLocal(sun.sx, sun.sy, off, scl); if (sun.t >= BURST) burstStar(); }
+  if (sun.state === 'dying') holdPt = toLocal(sun.sx, sun.sy, off, scl);
+  sun.mix = smooth(BURST - .1, 2.4, sun.t);
+}
+function sunUniforms() {
+  const t = sun.t, ign = clamp(t / IGN, 0, 1), cool = smooth(BURST, 6.5, t);
+  // fades in over the first .12 s of the crush and out over the last .12 s of a collapse
+  const vis = sun.fade * (1 - smooth(.08, .85, M)) * smooth(0, .12, t);
+  // while dying the retinue falls back into the singularity before DANNY re-forms (continuous at BURST)
+  const crush = sun.state === 'critical' ? smooth(0, BURST * .9, t)
+    : sun.state === 'dying' ? (t >= BURST ? smooth(BURST + .7, BURST, t) : smooth(0, BURST * .9, t)) : 0;
+  return { ign, cool, vis, crush, R: swell(ign) };
+}
+// the readout card sits beside the settled star; the side is chosen once, and when the card fits on
+// neither side (phones, portrait tablets) a one-line readout replaces the hero hint instead
+let starSide = 'right', starPos = '';
+function starLayout() {
+  starEl.classList.remove('dock');
+  const [tx] = sunTarget(), Rpx = sunRadiusPx(), lw = mobile ? 40 : 90, cw = stcEl.offsetWidth || 230;
+  starSide = tx + Rpx * .74 + lw * .95 + cw <= W - 16 ? 'right' : tx - Rpx * .74 - lw * .95 - cw >= 16 ? 'left' : 'dock';
+  starEl.classList.toggle('left', starSide === 'left'); starEl.classList.toggle('dock', starSide === 'dock');
+  if (starSide !== 'dock' && sun.state === 'born') gHintT.textContent = '별이 태어났습니다 · 스크롤하면 별은 뒤에 남습니다';
+  starEl.style.setProperty('--lw', lw + 'px');
+}
+function starReadout(u) {
+  if (!starEl.classList.contains('on')) { if (starPos) { starEl.style.opacity = ''; starPos = ''; } return; }
+  // the shader's colour is already white by cool .35 and cream by .65, so the temperature falls steeply first
+  const T = Math.round((TSUN + (30000 - TSUN) * Math.pow(1 - u.cool, 3.3)) / 10) * 10, R = u.R, L = R * R * Math.pow(T / TSUN, 4);
+  const cls = spectral(T), settled = u.cool > .995 && cls === 'G2', tTxt = T.toLocaleString('en-US') + ' K';
+  if (starSide === 'dock') { setTxt(gHintT, `DANNY-1 · ${tTxt} · ${settled ? 'G2V 태양형 주계열성' : '분광형 ' + cls}`); return; }
+  setTxt(stT, '표면 온도 ' + tTxt);
+  setTxt(stC, '분광형 ' + (settled ? 'G2V · 태양형 주계열성' : cls));
+  setTxt(stR, '반지름 ' + R.toFixed(2) + ' R☉ · 광도 ' + (L < 10 ? L.toFixed(2) : L.toFixed(0)) + ' L☉');
+  const Rpx = sunRadiusPx() * R, lw = mobile ? 40 : 90, cw = stcEl.offsetWidth || 230;
+  let ax = starSide === 'left' ? sun.sx - Rpx * .74 : sun.sx + Rpx * .74;
+  ax = starSide === 'left' ? Math.max(ax, 16 + cw + lw * .95) : Math.min(ax, W - 16 - cw - lw * .95);
+  const ay = Math.max(sun.sy - Rpx * .62, 84 + lw * .33 + 64);
+  const pos = ax.toFixed(1) + '|' + ay.toFixed(1) + '|' + u.vis.toFixed(3);
+  if (pos !== starPos) { starPos = pos; starEl.style.setProperty('--sx', ax.toFixed(1) + 'px'); starEl.style.setProperty('--sy', ay.toFixed(1) + 'px'); starEl.style.opacity = u.vis.toFixed(3); }
+}
 
 /* ================= render loop ================= */
-let last = performance.now(), T = 0, fps = 60, fpsAcc = 0, fpsN = 0, intro = 0, introOn = false;
-const readout = $('#readout'), navLinks = $$('[data-nav]');
+let last = performance.now(), T = 0, fps = 60, fpsAcc = 0, fpsN = 0, intro = 0, introOn = false, readS = '';
+const readout = $('#readout'), navLinks = $$('[data-nav]'), navFlow = $('#navFlow');
 let off = [0, 0, 0], scl = 1, alpha = 1;
 function frame(now) {
-  const dt = Math.min(.05, (now - last) / 1000); last = now;
-  T += dt * (RM ? .25 : 1);
-  fpsAcc += dt; fpsN++; if (fpsAcc > .5) { fps = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
+  const rawDt = (now - last) / 1000, dt = Math.min(.05, rawDt); last = now;
+  if (!RM) T += dt;   // reduced motion: the field holds still
+  fpsAcc += rawDt; fpsN++; if (fpsAcc > .5) { fps = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
   targetM = scrollM();
   M = RM ? targetM : lerp(M, targetM, 1 - Math.pow(.0015, dt));
   if (introOn) intro = Math.min(1, intro + dt / (RM ? .01 : 2.4));
@@ -629,44 +1901,72 @@ function frame(now) {
     off = [cfgAt(CFG.x, M), cfgAt(CFG.y, M), 0]; scl = cfgAt(CFG.s, M); alpha = cfgAt(CFG.a, M);
   }
   const local = mouse.active ? toLocal(mouse.x, mouse.y, off, scl) : [99, 99];
-  hold.v = hold.on ? Math.min(1, hold.v + dt / 1.5) : Math.max(0, hold.v - dt * 3.2);
+  hold.v = hold.on ? Math.min(1, hold.v + dt / 1.5) : Math.max(0, hold.v - dt * (sun.burst && sun.t < BURST + 1 ? 7 : 3.2));
+  if (hold.on && hold.v >= 1 && sun.state === 'none' && M < .3 && introOn && glOK && sunProg) igniteStar();
+  stepStar(dt, local);
+  const su = sunUniforms();
+  const fv = FLOW ? FLOW.update(dt) : 0;
   const hv = hold.v * hold.v * (3 - 2 * hold.v);
-  if (hold.on) holdPt = local;
+  if (hold.on && sun.state !== 'critical') holdPt = local;
   if (shockT >= 0) { shockT += dt; if (shockT > 4) shockT = -1; }
 
   if (hold.on || hold.v > 0) {
     hud.style.setProperty('--hx', mouse.x + 'px'); hud.style.setProperty('--hy', mouse.y + 'px');
     hudArc.setAttribute('stroke-dashoffset', (251.3 * (1 - hold.v)).toFixed(1));
-    hudT.textContent = 'GRAVITY ' + String(Math.round(hold.v * 100)).padStart(3, '0') + '%';
+    hudT.textContent = 'GRAVITY ' + String(Math.round(hold.v * 100)).padStart(3, '0') + '%' + (hold.v >= 1 ? (M < .3 && sun.state === 'none' ? ' · CRITICAL' : ' · MAX') : '');
   }
 
   lensS = lerp(lensS, lensOn ? 1 : 0, 1 - Math.pow(.0005, dt));
+  if (mouse.active) { lensPt.x = mouse.x; lensPt.y = mouse.y; }
   const D = mobile ? 230 : 300;
   if (lensS > .01) {
     lens.style.setProperty('--d', D + 'px');
-    lens.style.setProperty('--lx', mouse.x + 'px'); lens.style.setProperty('--ly', mouse.y + 'px');
-    lens.style.setProperty('--ls', lensS.toFixed(3));
-    code.style.setProperty('--px', (-mouse.x + D / 2) + 'px');
-    code.style.setProperty('--py', (-mouse.y + D / 2 - (scrollY * .35) % (code.offsetHeight / 2 || 1)) + 'px');
-    lensRead.textContent = `x ${String(Math.round(mouse.x)).padStart(4,'0')} · y ${String(Math.round(mouse.y + scrollY)).padStart(4,'0')} · ${FORMS[Math.round(M)]} · ${fps}FPS`;
-  } else lens.style.setProperty('--ls', 0);
+    lens.style.setProperty('--lx', lensPt.x + 'px'); lens.style.setProperty('--ly', lensPt.y + 'px');
+    lens.style.setProperty('--ls', lensS.toFixed(3)); lensSS = 'on';
+    code.style.setProperty('--px', (-lensPt.x + D / 2) + 'px');
+    code.style.setProperty('--py', (-lensPt.y + D / 2 - (scrollY * .35) % (code.offsetHeight / 2 || 1)) + 'px');
+    lensRead.textContent = `x ${String(Math.round(lensPt.x)).padStart(4,'0')} · y ${String(Math.round(lensPt.y + scrollY)).padStart(4,'0')} · ${FORMS[Math.round(M)]} · ${fps}FPS`;
+  } else if (lensSS) { lens.style.setProperty('--ls', 0); lensSS = ''; }
 
   const fi = Math.round(M);
-  readout.innerHTML = `FIELD <em>${FORMS[Math.floor(M)]}${M % 1 > .02 && M % 1 < .98 ? ' → ' + FORMS[Math.ceil(M)] : ''}</em> · ${fps}FPS`;
-  navLinks.forEach(a => a.classList.toggle('on', +a.dataset.nav === fi));
+  const rd = `FIELD <em>${FORMS[Math.floor(M)]}${M % 1 > .02 && M % 1 < .98 ? ' → ' + FORMS[Math.ceil(M)] : ''}</em> · ${fps}FPS`;
+  if (rd !== readS) { readS = rd; readout.innerHTML = rd; }
+  navLinks.forEach(a => a.classList.toggle('on', fv < .5 && +a.dataset.nav === fi)); navFlow.classList.toggle('on', fv >= .5);
 
+  starReadout(su);
   if (glOK) {
     gl.clearColor(.031, .035, .051, 1); gl.clear(gl.COLOR_BUFFER_BIT);
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    const dpr = canvas.width / W;
+    if (sunProg && su.vis > .002 && fv < .995) {
+      gl.useProgram(sunProg); bindAttribs([{ loc: quadLoc, buf: quadBuf, size: 2 }]);
+      gl.uniform2f(SU.uRes, canvas.width, canvas.height); gl.uniform1f(SU.uTime, T % 600);
+      gl.uniform2f(SU.uCenter, sun.sx * dpr, (H - sun.sy) * dpr); gl.uniform1f(SU.uRadius, sunRadiusPx() * dpr);
+      gl.uniform1f(SU.uIgnite, su.ign); gl.uniform1f(SU.uCool, su.cool); gl.uniform1f(SU.uFade, su.vis);
+      // no pointer (touch lifted, cursor left): the flare eases to a rest point up-right of the star
+      const rR = sunRadiusPx(), ptx = mouse.active ? mouse.x : sun.sx + rR * 1.4, pty = mouse.active ? mouse.y : sun.sy - rR * .8;
+      const pk = 1 - Math.pow(.004, dt); sunPtr.x += (ptx - sunPtr.x) * pk; sunPtr.y += (pty - sunPtr.y) * pk;
+      gl.uniform2f(SU.uMouse, sunPtr.x * dpr, (H - sunPtr.y) * dpr);
+      gl.drawArrays(gl.TRIANGLES, 0, 6);
+    }
+    if (fv < .995) {
+    gl.useProgram(prog); bindAttribs(PART_ATTRS);
+    const sl = toLocal(sun.sx, sun.sy, off, scl);
+    gl.uniform1f(U.uCrush, su.crush); gl.uniform1f(U.uSunMix, sun.state === 'none' ? 0 : sun.mix);
+    gl.uniform2f(U.uSunPt, sl[0], sl[1]); gl.uniform1f(U.uSunR, sunRadiusPx() / (H / 2) * (vis.h / 2) / scl);
+    gl.uniform2f(U.uSunNdc, sun.sx / W * 2 - 1, 1 - sun.sy / H * 2); gl.uniform1f(U.uSunRn, sunRadiusPx() * su.R / (H / 2));
+    gl.uniform1f(U.uSunOcc, sun.state === 'none' || !sunProg ? 0 : sun.mix * su.vis);
     gl.uniform3f(U.uOff, off[0], off[1], 0); gl.uniform1f(U.uS, scl);
     gl.uniform1f(U.uT, T); gl.uniform1f(U.uM, M); gl.uniform1f(U.uIntro, intro);
     gl.uniform1f(U.uHold, hv); gl.uniform2f(U.uHoldPt, holdPt[0], holdPt[1]);
     gl.uniform1f(U.uShock, shockT); gl.uniform1f(U.uShockA, shockA); gl.uniform2f(U.uShockPt, shockPt[0], shockPt[1]);
     gl.uniform2f(U.uMouse, hold.on ? 99 : local[0], hold.on ? 99 : local[1]);
-    gl.uniform1f(U.uAlpha, alpha); gl.uniform1f(U.uRM, RM ? 1 : 0);
+    gl.uniform1f(U.uAlpha, alpha * (1 - fv)); gl.uniform1f(U.uRM, RM ? 1 : 0);
     gl.uniform1f(U.uLensR, lensS * (D / 2) / (H / 2));
-    gl.uniform2f(U.uLensPt, mouse.x / W * 2 - 1, -(mouse.y / H * 2 - 1));
+    gl.uniform2f(U.uLensPt, lensPt.x / W * 2 - 1, -(lensPt.y / H * 2 - 1));
     gl.drawArrays(gl.POINTS, 0, N);
+    }
+    if (FLOW) FLOW.draw(T, mouse.active ? mouse.x / W : .5, mouse.active ? mouse.y / H : .5);
   }
   requestAnimationFrame(frame);
 }
@@ -724,7 +2024,10 @@ $$('[data-scramble]').forEach(h => io.observe(h));
 const thumbs = $$('[data-thumb]').map(c => ({ c, x: c.getContext('2d'), k: c.dataset.thumb, vis: false, hot: 0, t: Math.random() * 10 }));
 const tio = new IntersectionObserver(es => es.forEach(e => { const t = thumbs.find(t => t.c === e.target); if (t) t.vis = e.isIntersecting; }));
 thumbs.forEach(t => { tio.observe(t.c); t.c.closest('.card').addEventListener('pointerenter', () => t.hot = 1); t.c.closest('.card').addEventListener('pointerleave', () => t.hot = 0); });
-function sizeThumbs() { const d = Math.min(devicePixelRatio || 1, 2); thumbs.forEach(t => { t.c.width = Math.round(t.c.clientWidth * d); t.c.height = Math.round(t.c.clientHeight * d); t.d = d; }); }
+function sizeThumbs() {
+  const d = Math.min(devicePixelRatio || 1, FINE ? 1.5 : 1);
+  thumbs.forEach(t => { const w = Math.round(t.c.clientWidth * d), h = Math.round(t.c.clientHeight * d); if (t.c.width !== w || t.c.height !== h) { t.c.width = w; t.c.height = h; t.drawn = false; } t.d = d; });
+}
 const ICE = '188,211,255', EMB = '255,154,92';
 function drawThumb(o, dt) {
   const { x, c } = o, w = c.width, h = c.height, d = o.d || 1;
@@ -766,10 +2069,13 @@ function drawThumb(o, dt) {
     }
   }
 }
-let tl = performance.now();
+let tl = performance.now(), tacc = 0;
 (function thumbLoop(now) {
-  const dt = Math.min(.05, (now - tl) / 1000); tl = now;
-  thumbs.forEach(o => { if (o.vis || !o.drawn) { drawThumb(o, RM ? 0 : dt); o.drawn = true; } });
+  tacc += Math.min(.05, (now - tl) / 1000); tl = now;
+  if (tacc >= 1 / 30 || thumbs.some(o => !o.drawn)) {
+    thumbs.forEach(o => { if ((o.vis && !RM) || !o.drawn) { drawThumb(o, RM ? 0 : tacc); o.drawn = true; } });
+    tacc = 0;
+  }
   requestAnimationFrame(thumbLoop);
 })(tl);
 
@@ -786,7 +2092,11 @@ if (!FINE) $('#xHint').textContent = 'X-RAY 버튼을 누르면 화면 속 코�
 const tick = () => clk.textContent = '서울 ' + fmt.format(new Date()); tick(); setInterval(tick, 15000);
 
 /* ================= boot ================= */
-let rz; addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { layout(); sizeThumbs(); }, 150); });
+let rz, lastW = innerWidth;
+addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => {
+  const full = innerWidth !== lastW || Math.abs(innerHeight - H) > H * .2; lastW = innerWidth;
+  layout(full); sizeThumbs(); if (starEl.classList.contains('on')) starLayout();
+}, 150); });
 const ldNum = $('#ldNum'), ldBar = $('#ldBar'), ldMsg = $('#ldMsg'), msgs = ['입자 배치 중', '셰이더 컴파일 중', '중력장 보정 중', '형태 학습 중'];
 let ready = false, shown = 0;
 const t0 = performance.now();
