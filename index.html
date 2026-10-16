@@ -321,7 +321,7 @@ body.sun-on .hero .hero-line,body.sun-on .hero .tag,body.sun-on .hero .hint,body
   <section class="about" data-field="1" id="about">
     <div class="wrap">
       <div class="col">
-        <span class="tag mono">Field · Planet</span>
+        <span class="tag mono">Field · Earth</span>
         <h2 data-scramble>현장을 아는 사람이 <span class="soft">시스템을</span> 만듭니다.</h2>
         <p>우아한청년들에서 2년간 물류 운영 경험을 쌓으며 입출고 프로세스와 재고 관리 개선에 참여했습니다. 입출고 시스템과 WMS 기능 개발로 현장의 운영 요구사항을 시스템에 반영하고, 재고 정합성과 업무 생산성을 높이는 데 집중했습니다.</p>
         <p>AI는 요구사항 분석, 기능 설계, 코드 작성, 오류 분석에 적극적으로 씁니다. 물류 도메인에 대한 이해로 AI가 만든 결과물이 실제 업무에 맞는지 검토하고, 현장에 바로 적용할 수 있는 운영 개선안으로 구체화합니다.</p>
@@ -931,7 +931,7 @@ const FINE = matchMedia('(pointer: fine)').matches;
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const smooth = (a, b, x) => { const t = clamp((x - a) / (b - a), 0, 1); return t * t * (3 - 2 * t); };
 const lerp = (a, b, t) => a + (b - a) * t;
-const FORMS = ['TEXT', 'PLANET', 'TERRAIN', 'RACK', 'TEXT'];
+const FORMS = ['TEXT', 'EARTH', 'TERRAIN', 'RACK', 'TEXT'];
 
 /* ================= WebGL field ================= */
 const canvas = $('#field');
@@ -941,14 +941,27 @@ $('#pCount').textContent = $('#fCount').textContent = N.toLocaleString('en-US');
 
 const VS = `
 precision highp float;
-attribute vec3 p0,p1,p2,p3,p4; attribute vec4 aR;
+attribute vec3 p0,p1,p2,p3,p4,p5; attribute vec4 aR;
 uniform mat4 uP; uniform vec3 uOff; uniform float uS;
 uniform float uT,uM,uIntro,uHold,uShock,uShockA,uPix,uSize,uAlpha,uAsp,uLensR,uRM,uCrush,uSunMix,uSunR;
 uniform vec2 uMouse,uHoldPt,uShockPt,uLensPt,uSunPt,uSunNdc;
 uniform float uSunRn,uSunOcc;
+uniform float uERot,uETilt,uEZoom,uENight,uELoc;
 float sunA=1.,sunH=0.,sunB=0.;
 varying vec3 vC; varying float vA,vLens;
 vec3 rotY(vec3 p,float a){float c=cos(a),s=sin(a);return vec3(c*p.x+s*p.z,p.y,-s*p.x+c*p.z);}
+// earth: p1 is the whole globe, p5 the same particle's spot near Korea for the close-up.
+// The radius encodes what a point is: ocean <.995R, land, city lights >1.011R, atmosphere >1.03R, moon >1.5R.
+float eA=1.,eR=1.; vec3 eN=vec3(0.,0.,1.);
+vec3 earth(){
+  float th=.08+aR.y*.84, sw=smoothstep(th-.05,th+.05,uELoc);
+  vec3 b=sw<.5?p1:p5; eA=dot(p5-p1,p5-p1)<1e-8?1.:abs(sw-.5)*2.;
+  eR=length(b)/1.2;
+  vec3 q=rotY(b,uERot); float c=cos(uETilt),s=sin(uETilt);
+  q=vec3(q.x,q.y*c-q.z*s,q.y*s+q.z*c);
+  eN=q/max(length(q),1e-4);
+  return (q-vec3(0.,0.,1.2))*uEZoom+vec3(0.,0.,1.2);
+}
 // a newborn star's retinue: Keplerian disc, radial solar wind, sparks hugging the limb
 vec3 orbit(){
   float R=uSunR, lane=aR.w;
@@ -971,7 +984,7 @@ vec3 orbit(){
 }
 vec3 shape(float i){
   if(i<.5){ vec3 t=p0+vec3(0.,0.,sin(uT*.6+p0.x*1.4+p0.y)*.05); return uSunMix>0.?mix(t,orbit(),uSunMix):t; }
-  if(i<1.5) return rotY(p1,uT*.16);
+  if(i<1.5) return earth();
   if(i<2.5){vec3 q=p2;q.y+=sin(q.x*1.2+uT*.9)*.2+cos(q.z*1.6+uT*.7)*.2+sin((q.x+q.z)*2.4-uT*1.3)*.05;return q;}
   if(i<3.5) return rotY(p3,sin(uT*.25)*.55-.35);
   return p4+vec3(0.,0.,sin(uT*.8+p4.x*2.)*.05);
@@ -979,8 +992,11 @@ vec3 shape(float i){
 void main(){
   float i=floor(uM), f=uM-i, d=aR.x*.45;
   float g=smoothstep(d,d+.55,f);
+  // earth -> ground: the globe holds while the camera dives to Korea, then the lights rain down into the terrain
+  if(i>.5&&i<1.5){ d=.44+aR.x*.26; g=smoothstep(d,d+.28,f); }
+  float ew=i<.5?g:(i<1.5?1.-g:0.);
   vec3 p=mix(shape(i),shape(min(i+1.,4.)),g);
-  float tr=sin(3.14159*g)*(1.-uRM);
+  float tr=sin(3.14159*g)*(1.-uRM)*(i>.5&&i<1.5?.45:1.);
   p+=tr*vec3(sin(aR.y*40.+uT*1.3),cos(aR.z*40.+uT*1.1),sin(aR.w*40.+uT))*(.35+aR.x*.6);
   p+=vec3(sin(uT*.7+aR.y*6.28),cos(uT*.6+aR.z*6.28),sin(uT*.5+aR.w*6.28))*.012*(1.-uRM);
   vec3 chaos=(aR.yzw-.5)*vec3(14.,9.,8.);
@@ -1002,13 +1018,28 @@ void main(){
   gl_Position=uP*v;
   vec2 ndc=gl_Position.xy/gl_Position.w;
   vLens=1.-smoothstep(uLensR*.97,uLensR,length(vec2((ndc.x-uLensPt.x)*uAsp,ndc.y-uLensPt.y)));
-  float sz=uSize*uPix*(.55+aR.y*.9)*(1.+heat*.9)/(-v.z);
+  // on the night ground the globe's city lights burn as warm towns, brighter and a little larger than the mesh
+  float town=step(.965,aR.z)*(i>.5&&i<1.5?g:(i>1.5&&i<2.5?1.-g:0.));
+  float sz=uSize*uPix*(.55+aR.y*.9)*(1.+heat*.9)*(1.+town*.5)/(-v.z);
   gl_PointSize=mix(sz,max(sz*2.2,6.*uPix),vLens);
   vec3 ice=vec3(.74,.83,1.), ember=vec3(1.,.6,.36);
   float spark=step(.965,aR.z);
-  vC=mix(ice,ember,clamp(heat+spark,0.,1.));
+  vec3 base=ice; float ea=1.;
+  if(ew>0.){
+    vec3 L=normalize(vec3(-.75,.32,mix(.45,-.6,uENight)));
+    float day=smoothstep(-.12,.3,dot(eN,L)), rim=pow(1.-abs(eN.z),2.2);
+    vec3 ec; float al;
+    if(eR<.995){ ec=mix(vec3(.1,.16,.34),vec3(.22,.4,.88),day); al=mix(.05,.45,day); }
+    else if(eR<1.011){ ec=mix(vec3(.5,.64,1.),vec3(.7,.84,1.),day); al=mix(.8,1.05,day); }
+    else if(eR<1.03){ ec=mix(vec3(1.,.66,.36),vec3(.7,.82,1.),day); al=mix(1.5,.9,day); }
+    else if(eR<1.5){ ec=vec3(.45,.65,1.); al=rim*rim*(.3+.7*day)*1.2; }
+    else { ec=vec3(.8,.82,.88); al=.6*(1.-smoothstep(1.,1.8,uEZoom)); }
+    al*=mix(1.,eR<1.011?.95:eR<1.03?.9:.55,uELoc);   // close-up: keep the land bright, the dense city lights from burning out
+    base=mix(ice,ec,ew); spark*=1.-ew; ea=mix(1.,al*eA,ew);
+  }
+  vC=mix(base,ember,clamp(heat+spark,0.,1.));
   float occ=sunB*uSunOcc*(1.-g)*(1.-smoothstep(uSunRn*.9,uSunRn*1.02,length(vec2((ndc.x-uSunNdc.x)*uAsp,ndc.y-uSunNdc.y))));
-  vA=(.42+.58*aR.w)*uAlpha*(.6+.4*uIntro)*mix(1.,sunA,uSunMix)*(1.-occ);
+  vA=(.42+.58*aR.w)*uAlpha*(.6+.4*uIntro)*mix(1.,sunA,uSunMix)*(1.-occ)*ea*(1.+town*1.6);
 }`;
 const FS = `
 precision mediump float;
@@ -1030,17 +1061,17 @@ try {
   gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
   gl.linkProgram(prog); if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
   gl.useProgram(prog);
-  ['uP','uOff','uS','uT','uM','uIntro','uHold','uShock','uShockA','uPix','uSize','uAlpha','uAsp','uLensR','uRM','uMouse','uHoldPt','uShockPt','uLensPt','uCrush','uSunMix','uSunR','uSunPt','uSunNdc','uSunRn','uSunOcc']
+  ['uP','uOff','uS','uT','uM','uIntro','uHold','uShock','uShockA','uPix','uSize','uAlpha','uAsp','uLensR','uRM','uMouse','uHoldPt','uShockPt','uLensPt','uCrush','uSunMix','uSunR','uSunPt','uSunNdc','uSunRn','uSunOcc','uERot','uETilt','uEZoom','uENight','uELoc']
     .forEach(n => U[n] = gl.getUniformLocation(prog, n));
 } catch (e) { glOK = false; console.warn('WebGL off', e); }
 if (!glOK) document.documentElement.classList.add('no-gl');
 canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); glOK = false; document.documentElement.classList.add('no-gl'); });
 canvas.addEventListener('webglcontextrestored', () => location.reload());
 
-const A = { p0: new Float32Array(N*3), p1: new Float32Array(N*3), p2: new Float32Array(N*3), p3: new Float32Array(N*3), p4: new Float32Array(N*3), aR: new Float32Array(N*4) };
+const A = { p0: new Float32Array(N*3), p1: new Float32Array(N*3), p2: new Float32Array(N*3), p3: new Float32Array(N*3), p4: new Float32Array(N*3), p5: new Float32Array(N*3), aR: new Float32Array(N*4) };
 for (let i = 0; i < N*4; i++) A.aR[i] = Math.random();
 // several programs share one context: every pass binds exactly the attributes it reads and disables the rest
-const ATTR_SIZE = { p0: 3, p1: 3, p2: 3, p3: 3, p4: 3, aR: 4 };
+const ATTR_SIZE = { p0: 3, p1: 3, p2: 3, p3: 3, p4: 3, p5: 3, aR: 4 };
 let enabled = new Set();
 function bindAttribs(list) {
   const want = new Set(list.map(a => a.loc));
@@ -1097,21 +1128,65 @@ function sampleText(arr, str, worldW) {
     arr[i*3+2] = (rnd() - .5) * .12;
   }
 }
-function buildPlanet(arr) {
-  const ga = Math.PI * (3 - Math.sqrt(5)), nS = Math.floor(N * .68), R = 1.2, tilt = .42;
+// Earth from a half-degree land mask (Natural Earth 1:50m via world-atlas), run-length coded:
+// 720x360 cells from 90N, 180W; each char is a run (A=0 … +=62) that flips land/sea, '/' adds 63 and keeps going.
+const LAND = (() => {
+  const S = '////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////3GBe/////////plhz/////////YGBqIIBBDHBy/////////O4F/RDBFI//ZB//////aFEvHCB/k/+BJGMByCIC/////VKDrE/o/4HBFFGCCBFCEcCZK/////RSCGCZG/m/GIBJoEBBFDEH/BM/////RTBfM/cBD4GCBCEBR//DR////5FSSBUR/f8RBBEF//NLDD////nDKKDEFnG/o9W//aECK////fHKKDGGHCYF/pDB/BDBIDF//bKDBBB////YBBHIBGDCBFHFBFEBPN/p/EJFG//hC////UHVCRBJCETNBB/q/CHKB//fJ////OKDBJCIBGCCBDIFZQ/jDC/GC/jG/BNBH////AIBCBHGEHEBJENHCHET/kCB//hO2ECfyB///KBBBBDCLDJFLFBEHIJCBn/R//dO0urBDO///HXCDGGCGCaq/PBD//VBBJoBK1vQCJ///BIdFDYu/M//YJ000DRE//tKCC/6/M//XH4vED1C///BQTDIIDKFGDEBGs/I//XHw2CIECODfF//7VMHHHEJEGCRq/E//ZHaDS/OJLZE//5bCDCGFMCHFGCKBIo/F//XHaHFBHBC/iXH//2NCUBGHKCDIIBVn/E//WHaJEBDHC/hUU//uIDdKGCEHhk/E//VIaICEB/sGBNV8FpC/CCJbLBEHHliBB3BH//WBBFWLCSB/eFo2CoQ/FdOIHod6DF/YDBMvITMCSB//a/OgkCVfJKHpZ+CC/UBDT3CPLD//u/LsQNCDCEIgFCDINHDCCBBUZGB5/Te1HILC//wEDHECNnyFjFSBJFICICBHIFBCVaCE0/SBClaEUKFJD///BERBDY/pCJCFBBBCBCCBDGCIBEFIKBBQdBCz/SuWCHCHDCPDIDFB///VW/qLIMFDNCBBIKECPax/WBBxKFIuC///fW/wCYBPCLIFBCCQWq/g0GFExD///gW//nJDGTSp/h2FDExE///iBFS//jSXQn/g3H2D///tHFE//aCERPBKQlXDKF3rEHD////aBRF//lBDBBTNEGSiZFCN1tK////dHIK//iCFMVEDWZjSzTHTL////cJGM//gCJIZbXhUyVGVDFC////bOBY//UDKHDGRaXlOyXEZE////dp//QGGDEQQaWkCBIzBBWE////9VDJCB//TKCMCLICFbU/jWF/////Bf//VQDWIDBdR/iYF/////Ce//URCGBDGBDJFgQ/GCYYH////hBYk//UaBDMNCeP/HBXZI////WDGCVn//SgOsN/gZI////SHDFSsbBGD/phRrK/hZH////SIBETqDBZCIF/miQJBmF/UBMbCBDJG////AOKFCuBEBDSCFR/eiQID//McS////BNF/GQECY/ahSHE//LbK///zFBBBIHKH/GDCMf/aeUEH/4BRIDNJ///zjGCB/OHCCe/Zef/wCBFTEGLKCC///tjH/RFDDg/Zfe/uBDHbKEBGBD///shM/OEEEhEB/TDBce/tBBJWDDKCCFEB///qiN/MFr/fYe/vIVFEJI///ujO/KFv/eQDEf/vHVGDHK///tjQ/GFz/hSh/tJUFBHN///rlN/HCCBBB0/nJm/nECHUIR///pnNIB5E8CC/jFs/jGBCBFTEBCKDD///qEBjN/BB/H/hGs/gJEHRFCED///3DCFBZK/CC/DCD/iGt/eIGGPBB////MEBaI+D/HCD/iFu/dIDKK////YZI//KBE/hFv/dHDMG////aZF2B/WBF/fGu/bIEMG////aaEvE/h/gDt/dFGMF////caD//W//OCD/oLD////YCDaC//W//NDD/nLC////aDDZB//Z//KFC/nCBBK////aDEWC//c/5FDKF/x////cDE//2/2CDDEGK/p////gDF//3/xCIKL/kCB////iDC//7/vBJLM/h////mEC//7/5KO/i////jFB//8/4TBCD/l////fGC//8/5GBOB/n/PCYG//tHD//7/8CD/2/BCIFWI//sIB//9//C/2/AGEFVK//rYB//u/2BI/5bChFeI//tJCKC//x/zCH/7cEeIDFTI//tKDIB//z/xDE//AUCGFcTRH//tLFEB//0/uIC/zBMSFHEaWQH//rMI//2/t/8ZDDIHFXYPI//oMK//2/t/8YMBDGHVaNK//gDBNI//5/t/8ZKCEGJSbNJ//eTBEC//7/t/7YLCFIHRJHLOIBC//aUC///B/p//AWOBHHGVDLIQL//ZVC//+/p//BUOEIIDJBBCDDpHBC//HBQVD//+/m//ETQDKEBCCJEvH//JDOWE//+/l//ESFCKCMCGHGvI//GEECGZE//+/k//ETRCNCHGFuJ//FFCGEZE///A/i//FTgBIHFtK//BHBHHWE///C/h//GRbBDDIIDuK//COHWD///E/f//HRaGKGCBEsK//EDBIBBGUE///E/e//IPVCHEMDEBDuI//LIGOBCG///F/d//NJKQHBPBJvE//LJHOJ///F/d//OCLUmCEDE//sLGNJ///H/d//NCIYy//qNGKBCK///H/a//PHCZZFNDE//pOGGQ///I/a//OjrCF//pNEHP///M/X//Piz//sRBDEBG///V/R//Qlx//sUCBFBC///Y/O//Pov//tLCFI///d/N//PuOEY//uRF///h/K//QyJIW//vRD///i/J//RyJLS//xQD///jDD/C//Q1HPFFC//zRB///lDD/A//R5D///O///4DD0CJ//S////K///5DDuICCF//Q/2E//S///4EBjIEME//P/2F//R///6DChZF/+BHBF/4F//P///8DCebF//BBEBE/6F//PPB///qFEbcF//J/eEbF//N///8FDaeF//H/gDcG//K///+FDadF//H/gEcHFC//AQB///xDDZeEFB/+/jEcLBB//APB///zCDZfD//F/jEcBBJBC/+////ECFWhB//F/lEdHDIGCCC/r////EEFVmC/+/lEdGEV/pEC////BDFUnB/9/nEdBJU/nFC////DDFT//l/oGnU/kFD////FBGS//l/oGpT/iGD////NRbJ//A/qGpV/cJC////ORaDCI/7/sFqSsBsOB////PQdBFG/5/tEpUoFq////fQPHQFFB/x/tEoWEBdKgDD//6C/mRNHSG/2/tEnXCDcLdFC//9B/lSMGUH/0/tFkdcMcHB//9C/kSMGcH/s/tGjdbPZGE//8C/lSKHdI/q/tHidZRZFE////nRGBBIdJ/q/sHggXTYFE////ofTEEJCBCE/k/uGehWVYFCVE////TcVB/7/vGbjVWYcE////Va//S/vHajTYZbE////XX//S/wHWnTYaaE////aU1B/b/xGUqQZEDVYE////eCFT//J/xBBETrOdBEWXD////nT/4BN/zFStMjXWD////oT//F/2EOwMkWWE////oS//G/2DMzLkXWF////qN//I/2CJ2MjXXBBF////pL//H/4BF6MkDCRWCDC////tI//H/9RBqLYBLDCRXBEC////tHXC/u/5UBqKZBKEEPXBDCBC////sGWCCC/s/3PBxJZBKEGNZBEC////tFTECF/r/3JGxJlCHMaCCD////tFQPHECB/d/3DLyIkDIJWCEG////uGPHBMCECB/e//FyHmCKFYBGH////tGOHCT/g//EyGCBkCLDYBHECB////wEEEEf/f//DzFCCjDJDYBICEB////xIBDCf/g//C0EDCiEKBYBNE////xGDm/e//A2CDEhFsI////0DDn/d//A7EjDrJ////1BFn/e/88FjCrBDF////8n/e/79EjEeCJBDDBB////8p/eaE/a+DlEcDND////+w/YWI/Z/nGaFNB////+y/XSL/Y/eFFHYI/////Lz/YEY/W/gFFGWI/////N0/0BF/P/hFEGVJQB////71/4BB/N/jFEFJBKI/////P1/7/L/lFDFTJ/////O2/7/K/jBDFDEQN/////M4/5/K/pFDEOOUB////16/4/I/sHCCKDBOTB////26/4/H/qCCHCCJUEBGBFD////y8/4/F/tBCJLSEKFC////z9/3/E/xKKRFBGBHB////dBV/B/0/E/zICBIREBOCEC////XDT/E/w/E/1HLRECCEHDEBBFDB////i/I/u/D/yBDIKPFIOI////l/K/s/C/3IBCINFGCBCDDBEBDEEBBD////d/K/t/A/5LHNFGVEEHNB////N/PBC/l9/6MBCDNFGNBGGCL////Y/U/k7/8JDBHDBGEEBDHCCFEVRB////C/W/k6/9IRCBBGCBDIBCBICBV////Q/Y/k4//AHbCCDYUND///+/a/j3//BGbCCBBBbTLD////A/c/g2BB//CEbCDCdRKCFB///7/d/f2//FBBB1BCCGSCHGB///7/d/g2//GF0CHTDCJC///7/b/g2//FJCDsBISQB///8/b/g1//IOkBNRUB///5/b/g1//LNXBJBNTSBDB///3/Z/i0//QKBBCDCCDFZDCHFFRCCB///2/Z/h1//ZBBGCEGEbGGEYB///0/X/i1//rEfDIFBBTBBB///z/X/i2//gDGDtFBBRD///1/V/k2//hBGCwE////L/T/m2//nBlBnB///z/S/m2//3BBCSC////b/R/n2FB//vDCDQC////c/Q/n2RB//lMJE////c/O/n3RC//jMKE////c/M/o4QD//iNKE/ZB///C/M/o4PE//hNBBJE////c/M/o5OF//ZEDNBBJG////b/L/n6NG//XHCMMH////b/K/n5NH//WXLIqB///w/I/n5LJ//WZJI////e/G/m5JL//VdHIrCXB///a/E/m4KL//TBBeBBDK/CD///b/D/m2LL//TjDK//DB//d/C/m0NL//Tw/AC///h+/oyOL//Tx+C///h+/oxPL//SytB///z+/puSJ//Tz////h9/rsTJ//R3////f9/rsSJSB/69eB///98/trSJ//K/CfCDB///46/urRKOB/4/FfC///76/vrQK//G/HgC///56/xqPK//G/KgB///45/yqQJ//F/M////Z0/3qQI//G/M////Zz/4qQI//G/N////Yv/8qQI//G/O////Xu/9pSH//G/P////Wt/+mWE//J/Q////Tt//Bk//k/P////Ut//Bk//i/R////Ut//Bk//j/Q////Ut//Bk//k/Q////Tt//Ci//l/Q////Su//Dh//l/Q////St//Ff//n/P////Ss//Ge//p/O////Sr//Ic//q/O////Sr//Ic//q/N////SpBB//Ka//r/N////Tp//LZ//t/M////Tn//OX//ucEr////Tn//OW//vYMm////Um//PV//wTSk////Un//PT//yRVGBb////Vl//SQ//zSWEBc////VbBJ//SH//8JfDCb////WcDE//WB///DFiBDBBZsB///nf//////KBCYtD///le//////KDCXuC///kg//////PVwC///jh//////OVxBBB///gh//////PVxD///gg//////RTyECC///bg//////TN2I///bd//////aCDC4H///cX///////fG///eX///////gF///dX//////rB1E///dY//////jCEBxBED///eS//////pIvI///fS//////qHuG///iBCS//////nHtG///iCBT//////oFuF///jCBR//////qEtG///nQ///////bI///lS///////ZH///nS///////ZI///nQ///////aI///nP///////bJ///mQ///////cG///oR///////////MS///////ZB///tT///////////HS///////////JR///////////KQ////UE//////yQ////WB//////zO///////////NN///////////PMUB//////////5MQG//////////4NSB//////////8L///////////RFBF///////////QGBF///////////SL6C//////////UMCB3B//////////WG////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////QB///////////WB///////////hBBD///////////SF///////////QBCI///////////NH///////////UF///////////SBCF/////KBXB/////wJ///iL/SBIJKIfICC////7CCF///kBDN4CEqCLOJFZ////uI///iBDVy/6////pBCE///guCBY//E////pE///a3S//K////fCGI///ECM8Q//c////OEFJBB///AFJ8P//l////ACFGBN//dChKC8JBD//r////EGBN//ABFBJBGIEBOCG/MK//z///5FFFCMBB/rEECKBBgDHG/UF//2BL///xLBN/mDCIBDF//KG///F//4BCBuPCM/k//gG///M//wNuIDN/j//gE///M//wBWCCCgCCBFO/e//kC///P//ACujJEGFEX/Z/////0//FFDFCBg/V/RBI/////y/9BNCCEHCDDECS/S/RBHBC/////u/3KEfDDU/O/Z/////vBB/x/OC/M/Z/////w/oCB//h/T/////7/h//j/Q//////G/dCBCD//OGI/Q//////I/QJHGC//O/W//////QGB/G//tzDW//////UFE/G//gFBPBjLQ//////b8CN//UEHPFiOP//////WFB6IQ//PCIKECCiPNEDEB//////E/NFU//UJDFEJCSQWFE/////9/j//XTBHGMUZ//////F/m//WBBDFOGLKb//////Q/HDM//1z//////b/a//6o//////g/Y//6PRD//////m/DBQ//8K///////HrNDCK///EE///////Ov//////////4KEa///////////XH/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////M', AL = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const m = new Uint8Array(720 * 360); let o = 0, v = 0;
+  for (const ch of S) { const k = AL.indexOf(ch); if (v) m.fill(1, o, o + k); o += k; if (k < 63) v ^= 1; }
+  return m;
+})();
+const isLand = (lat, lon) => LAND[Math.min(359, Math.floor((90 - lat) * 2)) * 720 + Math.min(719, Math.floor(((lon + 540) % 360) * 2))] === 1;
+// city lights: [lat, lon, weight]; Korea is weighted up because the camera ends there
+const CITIES = [[37.55,126.99,9],[37.46,126.7,3],[37.27,127.03,3],[36.35,127.38,3],[35.87,128.6,3],[35.16,126.85,2],[35.18,129.08,5],[35.54,129.31,2],[36.64,127.49,1.5],[37.88,127.73,1],
+  [35.68,139.69,6],[34.69,135.5,4],[35.18,136.9,2],[33.59,130.4,1.5],[43.06,141.35,1],[39.9,116.4,4],[39.1,117.2,2],[31.23,121.47,5],[23.13,113.26,5],[22.32,114.17,2],[25.03,121.56,2],[30.6,114.3,2],[30.66,104.07,2],[29.56,106.55,1.5],[34.27,108.95,1.2],[36.07,120.38,1.5],[41.8,123.43,1.5],[38.04,114.5,1.2],
+  [13.75,100.5,2],[14.6,121,2],[-6.2,106.8,2.5],[1.35,103.82,1],[10.82,106.63,1.5],[21.03,105.85,1],[3.14,101.69,1],[28.61,77.21,3],[19.08,72.88,2.5],[22.57,88.36,2],[12.97,77.59,1.5],[13.08,80.27,1],[24.86,67.01,1.5],[31.55,74.34,1],[23.81,90.41,2],
+  [25.2,55.27,1],[35.69,51.39,1.5],[24.71,46.68,1],[41.01,28.98,2],[30.04,31.24,2],[51.51,-.13,3],[48.86,2.35,3],[52.52,13.4,1.5],[40.42,-3.7,1.5],[41.9,12.5,1.2],[45.46,9.19,1.2],[55.76,37.62,3],[51.5,6.8,2],[52.23,21.01,1],[50.45,30.52,1],[41.39,2.17,1],[59.93,30.34,1],
+  [6.52,3.38,2],[-26.2,28.05,1.5],[-4.32,15.31,1],[-1.29,36.82,1],[40.71,-74.01,4],[42.36,-71.06,1.2],[38.9,-77.04,1.5],[41.88,-87.63,2],[34.05,-118.24,3],[37.77,-122.42,1.5],[29.76,-95.37,1.5],[32.78,-96.8,1.5],[33.75,-84.39,1],[25.76,-80.19,1],[43.65,-79.38,1.5],[47.61,-122.33,1],[19.43,-99.13,3],
+  [-23.55,-46.63,3],[-22.91,-43.17,1.5],[-34.6,-58.38,2],[-12.05,-77.04,1.2],[4.71,-74.07,1.2],[-33.45,-70.67,1],[-33.87,151.21,1.2],[-37.81,144.96,1]];
+// the close-up is foveated on Korea: point density falls off with angular distance, so every zoom level
+// along the dive sees about the same number of points and no edge
+const KLAT = 37.4, KLON = 127.6, KMAX = 48;
+const angTo = (lat, lon) => { const r = Math.PI / 180, c = Math.sin(lat * r) * Math.sin(KLAT * r) + Math.cos(lat * r) * Math.cos(KLAT * r) * Math.cos((lon - KLON) * r); return Math.acos(clamp(c, -1, 1)) / r; };
+const inWin = (lat, lon) => angTo(lat, lon) < 25;
+function buildEarth(a1, a5) {
+  const R = 1.2, rad = Math.PI / 180;
+  const put = (arr, i, lat, lon, r) => { const c = Math.cos(lat * rad); arr[i*3] = c * Math.sin(lon * rad) * r; arr[i*3+1] = Math.sin(lat * rad) * r; arr[i*3+2] = c * Math.cos(lon * rad) * r; };
+  const anySphere = () => [Math.asin(Math.random() * 2 - 1) / rad, Math.random() * 360 - 180];
+  const winSphere = () => { // destination point at angle th from Korea along bearing b
+    // flat density over the peninsula (4.5 deg), then falling off like 1/th^2 out to KMAX
+    const u = Math.random(), th = (u < .36 ? 4.5 * Math.sqrt(u / .36) : 4.5 * Math.pow(KMAX / 4.5, (u - .36) / .64)) * rad, b = Math.random() * 6.2832, p1 = KLAT * rad;
+    const la = Math.asin(Math.sin(p1) * Math.cos(th) + Math.cos(p1) * Math.sin(th) * Math.cos(b));
+    const lo = KLON * rad + Math.atan2(Math.sin(b) * Math.sin(th) * Math.cos(p1), Math.cos(th) - Math.sin(p1) * Math.sin(la));
+    return [la / rad, ((lo / rad + 540) % 360) - 180]; };
+  const onLand = (pick, want) => { for (let t = 0; t < 400; t++) { const [la, lo] = pick(); if (isLand(la, lo) === want) return [la, lo]; } return pick(); };
+  const wSum = CITIES.reduce((s, c) => s + c[2], 0), wWin = CITIES.filter(c => inWin(c[0], c[1])).reduce((s, c) => s + c[2], 0);
+  const city = local => { let u = Math.random() * (local ? wWin : wSum);
+    for (const c of CITIES) { if (local && !inWin(c[0], c[1])) continue; if ((u -= c[2]) <= 0) {
+      const sp = .18 + .12 * Math.sqrt(c[2]); let la, lo;
+      for (let t = 0; t < 6; t++) { la = c[0] + (Math.random() + Math.random() + Math.random() - 1.5) * sp; lo = c[1] + (Math.random() + Math.random() + Math.random() - 1.5) * sp / Math.cos(c[0] * rad); if (isLand(la, lo)) break; }
+      return [la, lo]; } }
+    return [CITIES[0][0], CITIES[0][1]]; };
   for (let i = 0; i < N; i++) {
-    let x, y, z;
-    if (i < nS) {
-      const yy = 1 - (i / (nS - 1)) * 2, r = Math.sqrt(1 - yy * yy), th = ga * i;
-      const rr = R * (.985 + Math.random() * .03);
-      x = Math.cos(th) * r * rr; y = yy * rr; z = Math.sin(th) * r * rr;
-    } else {
-      const a = Math.random() * Math.PI * 2, band = Math.random();
-      const rr = R * (1.45 + band * band * .95 + (band > .55 && band < .6 ? 0 : 0));
-      x = Math.cos(a) * rr; z = Math.sin(a) * rr; y = (Math.random() - .5) * .02;
-      const ny = y * Math.cos(tilt) - z * Math.sin(tilt), nz = y * Math.sin(tilt) + z * Math.cos(tilt); y = ny; z = nz;
+    const spark = A.aR[i*4+2] > .965, u = (i * .618034) % 1;
+    let la, lo, r;
+    // the whole globe
+    if (spark) { [la, lo] = city(false); r = 1.016; }
+    else if (u < .62) { [la, lo] = onLand(anySphere, true); r = 1 + Math.random() * .008; }
+    else if (u < .8) { [la, lo] = onLand(anySphere, false); r = .985; }
+    else if (u < .93) { [la, lo] = anySphere(); r = 1.04 + Math.random() * .035; }
+    else { // moon: a small ball out at about 2R (close enough that it never drifts over the copy)
+      const mu = Math.random() * 2 - 1, mt = Math.random() * 6.283, mr = .26 * Math.sqrt(1 - mu * mu);
+      const cx = Math.sin(200 * rad) * 1.95, cz = Math.cos(200 * rad) * 1.95, cy = .62;
+      a1[i*3] = (cx + Math.cos(mt) * mr) * R; a1[i*3+1] = (cy + mu * .26) * R; a1[i*3+2] = (cz + Math.sin(mt) * mr) * R;
+      la = null;
     }
-    arr[i*3] = x; arr[i*3+1] = y; arr[i*3+2] = z;
+    if (la !== null) put(a1, i, la, lo, r * R);
+    // the close-up spot; sea is kept only a third of the time so the coastline carries the picture
+    let L2, O2, r2;
+    if (spark) { [L2, O2] = city(true); r2 = 1.016; }
+    else { [L2, O2] = winSphere(); for (let t = 0; t < 3 && !isLand(L2, O2); t++) [L2, O2] = winSphere(); r2 = isLand(L2, O2) ? 1 + Math.random() * .008 : .985; }
+    put(a5, i, L2, O2, r2 * R);
   }
 }
 function buildTerrain(arr) {
@@ -1121,6 +1196,16 @@ function buildTerrain(arr) {
     arr[i*3]   = (cx / (cols - 1) - .5) * far.w * 1.05;
     arr[i*3+1] = -1.45;
     arr[i*3+2] = 1.6 - (rz / (rows - 1)) * 6.6;
+  }
+  // the globe's city lights land as towns on the night ground: one big city, a few smaller ones, roads between
+  const T = [[0, -2.9, .55], [-far.w * .3, -1.4, .3], [far.w * .27, -3.9, .34], [far.w * .12, .3, .2], [-far.w * .16, -4.6, .24]];
+  for (let i = 0; i < N; i++) {
+    if (A.aR[i*4+2] <= .965) continue;
+    const u = A.aR[i*4], v = A.aR[i*4+1], w = A.aR[i*4+3];
+    if (u < .72) { const t = T[u < .36 ? 0 : 1 + Math.floor((u - .36) / .09)], rr = t[2] * Math.sqrt(-2 * Math.log(1 - v * .98)) * .55, a = w * 6.2832;
+      arr[i*3] = t[0] + Math.cos(a) * rr; arr[i*3+2] = t[1] + Math.sin(a) * rr * .8; }
+    else { const k = 1 + Math.floor((u - .72) / .07), a = T[0], b = T[Math.min(4, k)];
+      arr[i*3] = lerp(a[0], b[0], v) + (w - .5) * .03; arr[i*3+2] = lerp(a[1], b[1], v) + (w - .5) * .03; }
   }
 }
 function buildRack(arr) {
@@ -1184,7 +1269,7 @@ function layout(full = true) {
     : { x: [0, vis.w * .24, 0, -vis.w * .25, 0], y: [.42, 0, 0, 0, .7], s: [1, 1, 1, 1, 1], a: [1, 1, .8, 1, 1] };
   measure();
 }
-if (glOK) { buildPlanet(A.p1); buildRack(A.p3); upload('p1'); upload('p3'); upload('aR'); }
+if (glOK) { buildEarth(A.p1, A.p5); buildRack(A.p3); upload('p1'); upload('p5'); upload('p3'); upload('aR'); }
 
 /* ================= scroll → formation ================= */
 const secs = $$('[data-field]');
@@ -1336,7 +1421,7 @@ void main(){
   float rv=uBuild>=1.?1.:smoothstep(0.,3.,uBuild*58.-length(aP.xz)-aP.y*2.5);
   float seam=rv*(1.-rv)*4.;
   vC=vec4(mix(aC.rgb,vec3(1.,.72,.45),seam*.7),aC.a*f*uFade*m*mix(1.,.3,df)*(rv+seam*1.6)*1.3);
-  gl_PointSize=uPt>.5?clamp(aS*uPix*26./max(c.w,.3)*(1.+df*2.2),1.,72.*uPix):1.;
+  gl_PointSize=uPt>.5?clamp(aS*uPt*uPix*26./max(c.w,.3)*(1.+df*2.2),1.,72.*uPix):1.;
   if(uPt>.5) vC.a*=mix(1.,.45,df);
 }`;
   const FFS = `
@@ -1480,7 +1565,38 @@ void main(){
   for (let r = 0; r <= NBZ; r++) for (let x = BX0 - ROAD; x < bx(NBX); x += 12) cityPts.v(x, 4, bz(r) - ROAD / 2 + 2.6, WHT, .35, 1.1);
   // route: east door → avenue → along streets → destination tower
   const ROUTE = [[20.5, 0, OUT_Z], [BX0 - ROAD / 2, 0, OUT_Z], [BX0 - ROAD / 2, 0, bz(DEST.r) - ROAD / 2], [bx(DEST.c) - ROAD / 2, 0, bz(DEST.r) - ROAD / 2], [bx(DEST.c) - ROAD / 2, 0, bz(DEST.r) + 4.5], [DEST_P[0] - 3.5, 0, DEST_P[2]]];
-  wh.upload(); city.upload(); dust.upload(); cityPts.upload();
+  // the region around the city, seen only during the opening dive: warm towns joined by lit highways, like the night ground above
+  const reg = new Batch(14000, false), regL = new Batch(4000, false);
+  {
+    // towns on a jittered grid that fills the opening frame, kept clear of the city and the warehouse; a quarter are larger towns
+    const CC = [bx(NBX / 2), bz(NBZ / 2)], towns = [[CC[0], CC[1], 0]];
+    for (let gx = -600; gx <= 760; gx += 110) for (let gz = -520; gz <= 540; gz += 110) {
+      if (rnd() > .62) continue;
+      const x = gx + (rnd() - .5) * 90, z = gz + (rnd() - .5) * 90;
+      if (Math.hypot(x - CC[0], z - CC[1]) < 150 || Math.hypot(x, z) < 70) continue;
+      towns.push([x, z, rnd() < .25 ? 14 + rnd() * 12 : 4 + rnd() * 6]);
+    }
+    const gauss = () => Math.sqrt(-2 * Math.log(1 - rnd() * .999)) * Math.cos(6.2832 * rnd());
+    const lamp = () => rnd() < .86 ? (rnd() < .35 ? WHT : EMB_C) : ICE_C;
+    // each town: a dense warm core, streets running out of it with lamps thinning towards the edge, and a sparse sprawl
+    towns.forEach(([x, z, sz], n) => { if (!n) return;
+      const nk = sz * sz * .6 + 24, ns = 3 + Math.floor(rnd() * 4), a0 = rnd() * 6.2832;
+      for (let k = 0; k < nk * .55; k++) reg.v(x + gauss() * sz * .55, .4, z + gauss() * sz * .55, lamp(), .35 + rnd() * .5, 22 + rnd() * 14);
+      for (let st = 0; st < ns; st++) { const a = a0 + st * 6.2832 / ns + (rnd() - .5) * .7, len = sz * (1.6 + rnd() * 1.8);
+        for (let d = 1.5; d < len; d += 1.4 + d * .07) reg.v(x + Math.cos(a) * d + (rnd() - .5) * .8, .4, z + Math.sin(a) * d + (rnd() - .5) * .8, lamp(), .2 + .45 * (1 - d / len), 20); }
+      for (let k = 0; k < nk * .25; k++) reg.v(x + gauss() * sz * 1.5, .4, z + gauss() * sz * 1.5, lamp(), .12 + rnd() * .3, 20); });
+    // highways: every town to its two nearest neighbours, gently bent, a streetlight every 5 units
+    const done = new Set();
+    towns.forEach((a, i) => towns.map((b, j) => [j, Math.hypot(b[0] - a[0], b[1] - a[1])]).filter(([j]) => j !== i).sort((u, v) => u[1] - v[1]).slice(0, 2).forEach(([j]) => {
+      const key = Math.min(i, j) + ':' + Math.max(i, j); if (done.has(key)) return; done.add(key);
+      const b = towns[j], bend = (rnd() - .5) * .3, nx = -(b[1] - a[1]) * bend, nz = (b[0] - a[0]) * bend, P = [];
+      for (let t = 0; t <= 12; t++) { const u = t / 12, w = 4 * u * (1 - u); P.push([lerp(a[0], b[0], u) + nx * w, .2, lerp(a[1], b[1], u) + nz * w]); }
+      regL.poly(P, DIM, .1);
+      for (let t = 0; t < 12; t++) { const p0 = P[t], p1 = P[t + 1], sl = Math.hypot(p1[0] - p0[0], p1[2] - p0[2]);
+        for (let d = rnd() * 5; d < sl; d += 5) { const u = d / sl; reg.v(lerp(p0[0], p1[0], u), .4, lerp(p0[2], p1[2], u), rnd() < .7 ? EMB_C : WHT, .4, 20); } }
+    }));
+  }
+  wh.upload(); city.upload(); dust.upload(); cityPts.upload(); reg.upload(); regL.upload();
   const dyn = new Batch(16000, true), pts = new Batch(3000, true);
 
   /* ---------- helpers for scene timing ---------- */
@@ -1511,11 +1627,12 @@ void main(){
   /* ---------- scenes ---------- */
   // share: fraction of the pinned scroll. cam: [eye, target] at the scene's start and end.
   const SC = [
-    { k: 'open', share: .07, cam: [[4, 50, 36], [0, 0, -1], [-30, 15, 25], [-18, 1.5, -4]] },
+    // the opening continues the dive from the globe: high over the night city, down onto the warehouse roof
+    { k: 'open', share: .09, cam: [[150, 650, 340], [70, 0, 0], [-30, 15, 25], [-18, 1.5, -4]] },
     { k: 'inbound', share: .13, cam: [[-36, 1.7, 10], [-24, 2, -4], [-27.5, 2.4, 4.5], [-19, 1.3, -4]] },
     { k: 'inspect', share: .11, cam: [[-16.6, 1.5, 3.3], [-14.6, 1.1, -4], [-12, 1.9, 3.7], [-13.4, 1, -4]] },
     { k: 'putaway', share: .13, cam: [[-12, 20, 13], [0, 0, -1], [5, 25, 15], [3, 0, -1]] },
-    { k: 'count', share: .17, cam: [[3, 12, 16], [2, 2, -1], [1, 4, 12.5], [-.4, 3, 0]], mid: [[.3, [1, 5, 13], [-.4, 3, 0]], [.6, [-8, 16, 18], [-9, 1, -2]]] },
+    { k: 'count', share: .15, cam: [[3, 12, 16], [2, 2, -1], [1, 4, 12.5], [-.4, 3, 0]], mid: [[.3, [1, 5, 13], [-.4, 3, 0]], [.6, [-8, 16, 18], [-9, 1, -2]]] },
     { k: 'pick', share: .13, cam: [[0, 28, 20], [2, 0, 0], [9, 22, 17], [6, 0, -1]] },
     { k: 'pack', share: .1, cam: [[12, 3.4, 1.5], [15.5, 1, -4], [14.6, 2.6, 10.5], [21.5, 1.1, 3.6]] },
     { k: 'mile', share: .16, cam: [[17.5, 2.4, 7.6], [25, 1, 5], [104, 125, 126], [118, 0, 22]], mid: [[.24, [16, 9, 20], [26, 0, 14]], [.45, [48, 26, 44], [64, 0, 18]]] },
@@ -1529,6 +1646,13 @@ void main(){
   });
   const cr = (p0, p1, p2, p3, t) => { const t2 = t * t, t3 = t2 * t; return p1.map((_, i) => .5 * (2 * p1[i] + (-p0[i] + p2[i]) * t + (2 * p0[i] - 5 * p1[i] + 4 * p2[i] - p3[i]) * t2 + (-p0[i] + 3 * p1[i] - 3 * p2[i] + p3[i]) * t3)); };
   function camAt(p) {
+    // the opening is one continuous dive: distance shrinks on a log scale while the view swings round from overhead to the dock side
+    if (p < KEYS[1].p) {
+      const u = ease(clamp(p / KEYS[1].p, 0, 1)), a = KEYS[0], b = KEYS[1], oa = V3.sub(a.e, a.t), ob = V3.sub(b.e, b.t), da = Math.hypot(...oa), db = Math.hypot(...ob);
+      const el = lerp(Math.asin(oa[1] / da), Math.asin(ob[1] / db), u), az = lerp(Math.atan2(oa[0], oa[2]), Math.atan2(ob[0], ob[2]), u), d = da * Math.pow(db / da, u);
+      const t = a.t.map((v, i) => lerp(v, b.t[i], u));
+      return [[t[0] + Math.cos(el) * Math.sin(az) * d, t[1] + Math.sin(el) * d, t[2] + Math.cos(el) * Math.cos(az) * d], t];
+    }
     if (p <= KEYS[0].p) return [KEYS[0].e, KEYS[0].t];
     for (let i = 0; i < KEYS.length - 1; i++) if (p <= KEYS[i + 1].p) {
       const u = ease((p - KEYS[i].p) / (KEYS[i + 1].p - KEYS[i].p)), a = KEYS[Math.max(0, i - 1)], b = KEYS[i], c = KEYS[i + 1], d = KEYS[Math.min(KEYS.length - 1, i + 2)];
@@ -1614,7 +1738,7 @@ void main(){
     const asp = innerWidth / innerHeight, portrait = asp < 1, fov = (portrait ? 66 : 42) * Math.PI / 180;
     // phones: dolly back so the subject fits a narrow frame; lens shift lifts it above the caption
     if (portrait) eye = V3.lerp(tgt, eye, lerp(1.25, 1.7, clamp((1 - asp) * 2, 0, 1)));
-    const PR = M4.persp(fov, asp, .1, 600); PR[9] = portrait ? -.3 : -.1;
+    const PR = M4.persp(fov, asp, .1, 2600); PR[9] = portrait ? -.3 : -.1;
     const VP = M4.mul(PR, M4.look(eye, tgt, [0, 1, 0]));
     // ---------- dynamic geometry ----------
     dyn.n = 0; pts.n = 0;
@@ -1685,7 +1809,7 @@ void main(){
     const odoor = easeIO(seg(sPack, .6, .75)) * (1 - seg(sMile, .15, .35));
     if (odoor > 0) for (let n = 0; n <= 16; n++) { const u = n / 16; dyn.l([20, 3.5, OUT_Z - 1.4 + 2.8 * u], [26 + (n % 3), 0, OUT_Z - 2.6 + 5.2 * u], WHT, .07 * odoor, 0); }
     // last mile: route draws itself, the rider runs it, the destination tower lights up
-    const cityA = smooth(.0, .25, sMile) + seg(sPack, .7, 1) * .3;
+    const cityA = Math.max(smooth(.0, .25, sMile) + seg(sPack, .7, 1) * .3, (1 - smooth(.35, .9, seg(p, 0, SC[0].p1))) * .85);
     const routeT = ease(seg(sMile, .06, .82)), arrive = seg(sMile, .8, .9);
     if (sMile > 0) {
       const head = partial(ROUTE, routeT, EMB_C, .95, dyn); partial(ROUTE, 1, EMB_C, .12, dyn);
@@ -1708,17 +1832,21 @@ void main(){
     gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
     gl.useProgram(fp);
     gl.uniformMatrix4fv(FU.uVP, false, new Float32Array(VP)); gl.uniform3f(FU.uEye, eye[0], eye[1], eye[2]);
-    gl.uniform1f(FU.uPix, canvas.width / innerWidth); gl.uniform1f(FU.uFog, sMile > 0 ? .005 : .026);
-    gl.uniform1f(FU.uFocus, Math.hypot(...V3.sub(eye, tgt))); gl.uniform1f(FU.uDof, sMile > .3 ? .4 : 1.1);
+    // the opening starts high with clear air; the haze closes in as the camera reaches the roof
+    // lights stay pin-sharp points while the camera is high (uPt doubles as a point-size multiplier)
+    const sOpen = seg(p, 0, SC[0].p1), air = smooth(.3, 1, sOpen), regA = vis * (1 - smooth(.45, .95, sOpen)), fd = Math.hypot(...V3.sub(eye, tgt));
+    const regS = clamp(fd / 260, .6, 6), cityS = lerp(Math.max(1, fd / 10), 1, air);
+    gl.uniform1f(FU.uPix, canvas.width / innerWidth); gl.uniform1f(FU.uFog, sMile > 0 ? .005 : lerp(.4 / fd, .026, air));
+    gl.uniform1f(FU.uFocus, fd); gl.uniform1f(FU.uDof, sMile > .3 ? .4 : lerp(.3, 1.1, air));
     const whA = vis * (1 - smooth(.55, 1, sMile) * .5);
     const build = RM ? 1 : lerp(.1, 1, ease(seg(p, 0, SC[0].p1 * .85)));
     const layer = mirror => {
       gl.uniform1f(FU.uMirror, mirror);
       gl.uniform1f(FU.uPt, 0); gl.uniform1f(FU.uFade, whA); gl.uniform1f(FU.uBuild, build); wh.draw(gl.LINES); gl.uniform1f(FU.uBuild, 1);
-      if (!mirror) { gl.uniform1f(FU.uFade, vis * cityA); city.draw(gl.LINES); }
+      if (!mirror) { gl.uniform1f(FU.uFade, vis * cityA); city.draw(gl.LINES); if (regA > .003) { gl.uniform1f(FU.uFade, regA); regL.draw(gl.LINES); } }
       gl.uniform1f(FU.uFade, vis); dyn.draw(gl.LINES);
       gl.uniform1f(FU.uPt, 1);
-      if (!mirror) { gl.uniform1f(FU.uFade, whA * build); dust.draw(gl.POINTS); gl.uniform1f(FU.uFade, vis * cityA); cityPts.draw(gl.POINTS); }
+      if (!mirror) { gl.uniform1f(FU.uFade, whA * build); dust.draw(gl.POINTS); gl.uniform1f(FU.uFade, vis * cityA); gl.uniform1f(FU.uPt, cityS); cityPts.draw(gl.POINTS); if (regA > .003) { gl.uniform1f(FU.uFade, regA); gl.uniform1f(FU.uPt, regS); reg.draw(gl.POINTS); } gl.uniform1f(FU.uPt, 1); }
       gl.uniform1f(FU.uFade, vis); pts.draw(gl.POINTS);
     };
     if (sMile < .35) layer(1);
@@ -1731,7 +1859,7 @@ void main(){
         pass(PBLUR, post.A, u => { tex(0, post.B.t); gl.uniform1i(u.t, 0); gl.uniform2f(u.d, 0, (1 + it * 1.5) / post.A.h); });
       }
       gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
-      pass(PCOMP, null, u => { tex(0, post.S.t); tex(1, post.A.t); gl.uniform1i(u.s, 0); gl.uniform1i(u.b, 1); gl.uniform1f(u.k, isMob() ? 1.7 : 2.4); gl.uniform1f(u.ca, .022); gl.uniform1f(u.f, vis); });
+      pass(PCOMP, null, u => { tex(0, post.S.t); tex(1, post.A.t); gl.uniform1i(u.s, 0); gl.uniform1i(u.b, 1); gl.uniform1f(u.k, isMob() ? 1.7 : 2.4); gl.uniform1f(u.ca, lerp(.005, .022, air)); gl.uniform1f(u.f, vis); });
       gl.activeTexture(gl.TEXTURE0);
     }
 
@@ -1890,6 +2018,7 @@ function starReadout(u) {
 }
 
 /* ================= render loop ================= */
+let eSpin = -170 * Math.PI / 180, eD0 = null;
 let last = performance.now(), T = 0, fps = 60, fpsAcc = 0, fpsN = 0, intro = 0, introOn = false, readS = '';
 const readout = $('#readout'), navLinks = $$('[data-nav]'), navFlow = $('#navFlow');
 let off = [0, 0, 0], scl = 1, alpha = 1;
@@ -1903,6 +2032,8 @@ function frame(now) {
 
   if (CFG) {
     off = [cfgAt(CFG.x, M), cfgAt(CFG.y, M), 0]; scl = cfgAt(CFG.s, M); alpha = cfgAt(CFG.a, M);
+    // phones: the Korea close-up rises above the works heading and shines through brighter than the globe behind the text
+    if (mobile) { const kb = smooth(.08, .3, M - 1) * (1 - smooth(.46, .7, M - 1)); off[1] += kb * vis.h * .2; alpha = Math.min(1, alpha * (1 + kb * .9)); }
   }
   const local = mouse.active ? toLocal(mouse.x, mouse.y, off, scl) : [99, 99];
   hold.v = hold.on ? Math.min(1, hold.v + dt / 1.5) : Math.max(0, hold.v - dt * (sun.burst && sun.t < BURST + 1 ? 7 : 3.2));
@@ -1933,7 +2064,7 @@ function frame(now) {
   } else if (lensSS) { lens.style.setProperty('--ls', 0); lensSS = ''; }
 
   const fi = Math.round(M);
-  const rd = `FIELD <em>${FORMS[Math.floor(M)]}${M % 1 > .02 && M % 1 < .98 ? ' → ' + FORMS[Math.ceil(M)] : ''}</em> · ${fps}FPS`;
+  const mi = Math.floor(M + .02), rd = `FIELD <em>${FORMS[mi]}${M - mi > .02 ? ' → ' + FORMS[Math.min(4, mi + 1)] : ''}</em> · ${fps}FPS`;
   if (rd !== readS) { readS = rd; readout.innerHTML = rd; }
   navLinks.forEach(a => a.classList.toggle('on', fv < .5 && +a.dataset.nav === fi)); navFlow.classList.toggle('on', fv >= .5);
 
@@ -1962,6 +2093,14 @@ function frame(now) {
     gl.uniform1f(U.uSunOcc, sun.state === 'none' || !sunProg ? 0 : sun.mix * su.vis);
     gl.uniform3f(U.uOff, off[0], off[1], 0); gl.uniform1f(U.uS, scl);
     gl.uniform1f(U.uT, T); gl.uniform1f(U.uM, M); gl.uniform1f(U.uIntro, intro);
+    // earth: spins until the reader heads for the works section; then Korea turns to the camera, night falls over it
+    // and the camera dives in (the globe's far points re-gather around the peninsula as they leave the frame)
+    const ef = clamp(M - 1, 0, 1), ek = smooth(.01, .32, ef), rad = Math.PI / 180;
+    if (ek <= 0) { if (!RM) eSpin = (eSpin + dt * .16) % 6.2832; eD0 = null; }
+    else if (eD0 === null) { const d = -KLON * rad - eSpin; eD0 = d - 6.2832 * Math.floor((d + Math.PI) / 6.2832); }
+    gl.uniform1f(U.uERot, eSpin + (eD0 || 0) * ek); gl.uniform1f(U.uETilt, lerp(.32, KLAT * rad, ek));
+    gl.uniform1f(U.uEZoom, Math.exp(Math.log(mobile ? 10 : 22) * smooth(.06, .46, ef)));
+    gl.uniform1f(U.uENight, smooth(.02, .32, ef)); gl.uniform1f(U.uELoc, smooth(.08, .4, ef));
     gl.uniform1f(U.uHold, hv); gl.uniform2f(U.uHoldPt, holdPt[0], holdPt[1]);
     gl.uniform1f(U.uShock, shockT); gl.uniform1f(U.uShockA, shockA); gl.uniform2f(U.uShockPt, shockPt[0], shockPt[1]);
     gl.uniform2f(U.uMouse, hold.on ? 99 : local[0], hold.on ? 99 : local[1]);
